@@ -9,5 +9,6 @@ type GeocodingParams = {
 export const useReverseGeocoding = (params: GeocodingParams) => {
   return useQuery(["geocoding", params], () => reverseGeocode(params), {
     enabled: Boolean(params.latitude) && Boolean(params.longitude),
+    staleTime: 60000,
   });
 };
