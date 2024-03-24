@@ -3,8 +3,6 @@ import { fetchWeather } from "@/services/weather";
 import { useQuery } from "react-query";
 
 type useWeatherParams = {
-  loading: boolean;
-  error?: GeolocationPositionError | null;
   latitude: number | null;
   longitude: number | null;
 };
@@ -53,7 +51,7 @@ export const useWeatherApi = (params: useWeatherParams) => {
     },
     {
       retry: false,
-      enabled: !params.loading && !params.error,
+      enabled: Boolean(params.latitude) && Boolean(params.longitude),
       staleTime: 60000,
     }
   );
