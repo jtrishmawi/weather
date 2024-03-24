@@ -5,14 +5,17 @@ import { useQuery } from "react-query";
 type useWeatherParams = {
   loading: boolean;
   error?: GeolocationPositionError | null;
-  latitude?: number;
-  longitude?: number;
+  latitude: number | null;
+  longitude: number | null;
 };
 
 export const useWeather = (params: useWeatherParams) => {
   return useQuery(
     ["weather", { latitude: params.latitude, longitude: params.longitude }],
     async () => {
+      if (!params.latitude || !params.longitude) {
+        return Promise.reject(new Error("latitude and longitude are required"));
+      }
       const response = await fetchWeather({
         latitude: params.latitude,
         longitude: params.longitude,

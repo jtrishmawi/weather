@@ -1,5 +1,6 @@
+import { useGeocoding } from "@/hooks/useGeocoding";
 import { useGeolocation } from "@/hooks/useGeolocation";
-import { useWeather } from "./hooks/useWeather";
+import { useWeather } from "@/hooks/useWeather";
 import {
   Legend,
   Line,
@@ -13,7 +14,8 @@ import {
 export const App = () => {
   const state = useGeolocation();
   const { data, isLoading, isError } = useWeather(state);
-
+  const { data: geocoding } = useGeocoding(state);
+  console.log(state, geocoding);
   if (state.loading || isLoading) {
     return <p>loading... (you may need to enable permissions)</p>;
   }
