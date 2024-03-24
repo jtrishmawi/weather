@@ -1,6 +1,6 @@
-import { useReverseGeocoding } from "@/hooks/useReverseGeocoding";
 import { useGeolocation } from "@/hooks/useGeolocation";
-import { useWeather } from "@/hooks/useWeather";
+import { useReverseGeocoding } from "@/hooks/useReverseGeocoding";
+import { useWeatherApi } from "@/hooks/useWeatherApi";
 import {
   Legend,
   Line,
@@ -13,7 +13,7 @@ import {
 
 export const App = () => {
   const state = useGeolocation();
-  const { data, isLoading, isError } = useWeather(state);
+  const { data, isLoading, isError } = useWeatherApi(state);
   const { data: geocoding } = useReverseGeocoding(state);
   console.log(state, geocoding);
   if (state.loading || isLoading) {

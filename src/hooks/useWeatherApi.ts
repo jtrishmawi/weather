@@ -9,7 +9,7 @@ type useWeatherParams = {
   longitude: number | null;
 };
 
-export const useWeather = (params: useWeatherParams) => {
+export const useWeatherApi = (params: useWeatherParams) => {
   return useQuery(
     ["weather", { latitude: params.latitude, longitude: params.longitude }],
     async () => {
