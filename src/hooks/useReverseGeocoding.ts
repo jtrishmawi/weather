@@ -1,4 +1,4 @@
-import { geocode } from "@/services/geocoding";
+import { reverseGeocode } from "@/services/reverse-geocoding";
 import { useQuery } from "react-query";
 
 type GeocodingParams = {
@@ -6,8 +6,8 @@ type GeocodingParams = {
   longitude: number | null;
 };
 
-export const useGeocoding = (params: GeocodingParams) => {
-  return useQuery(["geocoding", params], () => geocode(params), {
+export const useReverseGeocoding = (params: GeocodingParams) => {
+  return useQuery(["geocoding", params], () => reverseGeocode(params), {
     enabled: Boolean(params.latitude) && Boolean(params.longitude),
   });
 };

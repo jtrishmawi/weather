@@ -51,7 +51,7 @@ type GeocodingResponse = {
   };
 };
 
-export const geocode = async ({
+export const reverseGeocode = async ({
   latitude,
   longitude,
 }: GeocodingParams): Promise<GeocodingResponse> => {
