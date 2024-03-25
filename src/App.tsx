@@ -1,16 +1,8 @@
+import { ModeToggle } from "@/components/mode-toggle";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { useReverseGeocoding } from "@/hooks/useReverseGeocoding";
 import { useWeatherApi } from "@/hooks/useWeatherApi";
-import {
-  Legend,
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
-import { ModeToggle } from "./components/mode-toggle";
+import { OverviewChart } from "./components/overview-chart";
 
 export const App = () => {
   const state = useGeolocation();
@@ -41,17 +33,6 @@ export const App = () => {
     return <p>Geocoding error</p>;
   }
 
-  const charts = weather.data?.hourly.time.map((time, index) => {
-    return {
-      rain:
-        weather.data?.hourly.rain[index] === 0
-          ? null
-          : weather.data?.hourly.rain[index],
-      temperature: weather.data?.hourly.temperature2m[index],
-      time: time,
-    };
-  });
-
   return (
     <div className="w-full h-screen">
       <div className="container">
@@ -60,29 +41,15 @@ export const App = () => {
           <ModeToggle />
         </div>
         <div className="grid grid-cols-2 grid-rows-2 gap-4">
-          <div>
+          <div className="rounded-xl border-2 p-2">
             <h2>{geocoding.data?.city}</h2>
           </div>
-          <div>Map</div>
-          <div>
+          <div className="rounded-xl border-2">Map</div>
+          <div className="rounded-xl border-2 p-2">
             <h2>Overview</h2>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart width={500} height={300} data={charts}>
-                <XAxis dataKey={"time"} />
-                <YAxis yAxisId={"rain"} orientation="right" />
-                <YAxis yAxisId={"temperature"} />
-                <Tooltip />
-                <Legend />
-                <Line dataKey={"rain"} yAxisId={"rain"} stroke="#8884d8" />
-                <Line
-                  dataKey={"temperature"}
-                  yAxisId={"temperature"}
-                  stroke="#82ca9d"
-                />
-              </LineChart>
-            </ResponsiveContainer>
+            <OverviewChart {...weather.data!.hourly} />
           </div>
-          <div>Forecast</div>
+          <div className="rounded-xl border-2 p-2">Forecast</div>
         </div>
       </div>
     </div>
