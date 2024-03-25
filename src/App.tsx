@@ -37,12 +37,12 @@ export const App = () => {
 
   return (
     <div className="w-full h-screen">
-      <div className="container">
+      <div className="px-10">
         <div className="flex items-center justify-between py-4">
           <h1 className="text-3xl font-bold">Weather App</h1>
           <ModeToggle />
         </div>
-        <div className="grid grid-cols-2 grid-rows-2 gap-4">
+        <div className="grid grid-cols-[2fr_1fr] grid-rows-2 gap-4">
           <div className="rounded-xl border-2 p-2">
             <h2>{geocoding.data?.city}</h2>
           </div>
