@@ -1,8 +1,9 @@
+import { Map } from "@/components/map";
 import { ModeToggle } from "@/components/mode-toggle";
+import { OverviewChart } from "@/components/overview-chart";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { useReverseGeocoding } from "@/hooks/useReverseGeocoding";
 import { useWeatherApi } from "@/hooks/useWeatherApi";
-import { OverviewChart } from "./components/overview-chart";
 
 export const App = () => {
   const state = useGeolocation();
@@ -22,6 +23,7 @@ export const App = () => {
   }
 
   if (state.error) {
+    console.error(state.error);
     return <p>Enable permissions to access your location data</p>;
   }
 
@@ -44,7 +46,17 @@ export const App = () => {
           <div className="rounded-xl border-2 p-2">
             <h2>{geocoding.data?.city}</h2>
           </div>
-          <div className="rounded-xl border-2">Map</div>
+          <div className="rounded-xl border-2 overflow-hidden">
+            <Map
+              latitude={weather.data!.latitude}
+              longitude={weather.data!.longitude}
+              city={geocoding.data!.city}
+              country={geocoding.data!.countryName}
+              temperature={weather.data!.current.temperature2m}
+              humidity={weather.data!.current.relativeHumidity2m}
+              weatherCode={weather.data!.current.weatherCode}
+            />
+          </div>
           <div className="rounded-xl border-2 p-2">
             <h2>Overview</h2>
             <OverviewChart {...weather.data!.hourly} />

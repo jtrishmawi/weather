@@ -12,7 +12,13 @@ export const fetchWeather = async (params: WeatherParams) => {
   params = {
     latitude: 48.8967,
     longitude: 2.2567,
-    current: ["temperature_2m", "is_day", "rain"],
+    current: [
+      "temperature_2m",
+      "is_day",
+      "rain",
+      "relative_humidity_2m",
+      "weather_code",
+    ],
     hourly: ["temperature_2m", "rain"],
     timezone: "auto",
     ...params,

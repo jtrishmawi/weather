@@ -23,8 +23,8 @@ export const useWeatherApi = (params: useWeatherParams) => {
       const utcOffsetSeconds = response.utcOffsetSeconds();
       //   const timezone = response.timezone();
       //   const timezoneAbbreviation = response.timezoneAbbreviation();
-      //   const latitude = response.latitude();
-      //   const longitude = response.longitude();
+      const latitude = response.latitude();
+      const longitude = response.longitude();
       const current = response.current()!;
       const hourly = response.hourly()!;
 
@@ -35,6 +35,8 @@ export const useWeatherApi = (params: useWeatherParams) => {
           temperature2m: current.variables(0)!.value(),
           isDay: current.variables(1)!.value(),
           rain: current.variables(2)!.value(),
+          relativeHumidity2m: current.variables(3)!.value(),
+          weatherCode: current.variables(4)!.value(),
         },
         hourly: {
           time: range(
@@ -45,6 +47,8 @@ export const useWeatherApi = (params: useWeatherParams) => {
           temperature2m: hourly.variables(0)!.valuesArray()!,
           rain: hourly.variables(1)!.valuesArray()!,
         },
+        latitude,
+        longitude,
       };
 
       return weatherData;

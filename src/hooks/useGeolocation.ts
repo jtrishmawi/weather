@@ -17,6 +17,7 @@ export const useGeolocation = (
   options: PositionOptions = {
     timeout: 10000,
     enableHighAccuracy: true,
+    maximumAge: 0,
   }
 ) => {
   const [state, setState] = useState<GeolocationState>({
