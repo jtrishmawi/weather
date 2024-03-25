@@ -16,6 +16,7 @@ type GeolocationState = {
 export const useGeolocation = (
   options: PositionOptions = {
     timeout: 10000,
+    enableHighAccuracy: true,
   }
 ) => {
   const [state, setState] = useState<GeolocationState>({
