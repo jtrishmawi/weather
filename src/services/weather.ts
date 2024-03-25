@@ -4,6 +4,7 @@ type WeatherParams = {
   latitude?: number;
   longitude?: number;
   current?: string[];
+  daily?: string[];
   hourly?: string[];
   timezone?: string;
 };
@@ -19,6 +20,7 @@ export const fetchWeather = async (params: WeatherParams) => {
       "relative_humidity_2m",
       "weather_code",
     ],
+    daily: ["weather_code", "temperature_2m_max", "temperature_2m_min"],
     hourly: ["temperature_2m", "rain"],
     timezone: "auto",
     ...params,

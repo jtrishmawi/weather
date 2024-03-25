@@ -27,16 +27,25 @@ export const useWeatherApi = (params: useWeatherParams) => {
       const longitude = response.longitude();
       const current = response.current()!;
       const hourly = response.hourly()!;
+      const daily = response.daily()!;
 
       // Note: The order of weather variables in the URL query and the indices below need to match!
       const weatherData = {
         current: {
           time: new Date((Number(current.time()) + utcOffsetSeconds) * 1000),
           temperature2m: current.variables(0)!.value(),
-          isDay: current.variables(1)!.value(),
+          isDay: Boolean(current.variables(1)!.value()),
           rain: current.variables(2)!.value(),
           relativeHumidity2m: current.variables(3)!.value(),
           weatherCode: current.variables(4)!.value(),
+        },
+        daily:{
+          time: range(Number(daily.time()), Number(daily.timeEnd()), daily.interval()).map(
+            (t) => new Date((t + utcOffsetSeconds) * 1000)
+          ),
+          weatherCode: daily.variables(0)!.valuesArray()!,
+          temperature2mMax: daily.variables(1)!.valuesArray()!,
+          temperature2mMin: daily.variables(2)!.valuesArray()!,
         },
         hourly: {
           time: range(

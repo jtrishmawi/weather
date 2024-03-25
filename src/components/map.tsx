@@ -16,6 +16,7 @@ type MapProps = {
   temperature: number;
   humidity: number;
   weatherCode: number;
+  isDay: boolean;
 };
 
 export const Map = ({
@@ -26,6 +27,7 @@ export const Map = ({
   temperature,
   humidity,
   weatherCode,
+  isDay,
 }: MapProps) => {
   const ref = useRef<SVGForeignObjectElement>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
@@ -42,7 +44,8 @@ export const Map = ({
   return (
     <ComposableMap
       projection={"geoAzimuthalEqualArea"}
-      projectionConfig={{ rotate: [-longitude, -latitude, 0], scale: 1200 }}
+      projectionConfig={{ rotate: [-longitude, -latitude, 0], scale: 2000 }}
+      className="h-full w-full"
     >
       <Geographies geography={"features.json"}>
         {({ geographies }) =>
@@ -82,7 +85,8 @@ export const Map = ({
               {city}, {country}
             </p>
             <p className="text-sm">
-              {temperature.toFixed(0)}°C {getWMOCode(weatherCode)}
+              {temperature.toFixed(0)}°C{" "}
+              {getWMOCode(weatherCode.toString(), isDay ? "day" : "night")}
             </p>
             <p className="text-sm">{humidity.toFixed(0)}% humidity</p>
           </div>

@@ -4,6 +4,7 @@ import { OverviewChart } from "@/components/overview-chart";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { useReverseGeocoding } from "@/hooks/useReverseGeocoding";
 import { useWeatherApi } from "@/hooks/useWeatherApi";
+import { Forecast } from "@/components/forecast";
 
 export const App = () => {
   const state = useGeolocation();
@@ -43,10 +44,12 @@ export const App = () => {
           <ModeToggle />
         </div>
         <div className="grid grid-cols-[2fr_1fr] grid-rows-2 gap-4">
-          <div className="rounded-xl border-2 p-2">
-            <h2>{geocoding.data?.city}</h2>
+          <div className="rounded-xl border-2 p-2 dark:bg-neutral-800 bg-neutral-100">
+            <h2 className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-0">
+              {geocoding.data?.city}
+            </h2>
           </div>
-          <div className="rounded-xl border-2 overflow-hidden">
+          <div className="rounded-xl border-2 overflow-hidden dark:bg-neutral-800 bg-neutral-100">
             <Map
               latitude={weather.data!.latitude}
               longitude={weather.data!.longitude}
@@ -55,13 +58,15 @@ export const App = () => {
               temperature={weather.data!.current.temperature2m}
               humidity={weather.data!.current.relativeHumidity2m}
               weatherCode={weather.data!.current.weatherCode}
+              isDay={weather.data!.current.isDay}
             />
           </div>
-          <div className="rounded-xl border-2 p-2">
-            <h2>Overview</h2>
+          <div className="rounded-xl border-2 p-2 dark:bg-neutral-800 bg-neutral-100">
             <OverviewChart {...weather.data!.hourly} />
           </div>
-          <div className="rounded-xl border-2 p-2">Forecast</div>
+          <div className="rounded-xl border-2 p-2 dark:bg-neutral-800 bg-neutral-100">
+            <Forecast {...weather.data!.daily} />
+          </div>
         </div>
       </div>
     </div>
