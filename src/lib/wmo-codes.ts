@@ -287,9 +287,10 @@ const lookup: Record<
   },
 };
 export const getWMOCode = (wmoCode: string, time: "day" | "night" = "day") =>
-  lookup[wmoCode][time]["description"] || "Unknown";
+  lookup[wmoCode]?.[time]?.["description"] || "Unknown";
 
 export const getWMOImageUrl = (
   wmoCode: string,
   time: "day" | "night" = "day"
-) => lookup[wmoCode][time]["image"] || "https://placehold.co/100?text=Unknown";
+) =>
+  lookup[wmoCode]?.[time]?.["image"] || "https://placehold.co/100?text=Unknown";
