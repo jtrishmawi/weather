@@ -66,7 +66,8 @@ export const CurrentCard = ({
                 weather.current.weatherCode.toString(),
                 weather.current.isDay ? "day" : "night"
               )}
-              className="aspect-square w-auto h-[100px]"
+              className="aspect-square w-auto h-[100px] shadow rounded-full invert dark:invert-0"
+
             />
             <div className="text-5xl font-bold">
               {Math.round(weather.current.temperature2m)}&deg;C

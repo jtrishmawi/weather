@@ -28,7 +28,12 @@ export const fetchWeather = async (params: WeatherParams) => {
       "wind_direction_10m",
       "wind_gusts_10m",
     ],
-    daily: ["weather_code", "temperature_2m_max", "temperature_2m_min"],
+    daily: [
+      "weather_code",
+      "temperature_2m_max",
+      "temperature_2m_min",
+      "precipitation_sum",
+    ],
     hourly: ["temperature_2m", "precipitation"],
     timezone: "auto",
     ...params,

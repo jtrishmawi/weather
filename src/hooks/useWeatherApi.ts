@@ -56,6 +56,7 @@ export const useWeatherApi = (params: useWeatherParams) => {
           weatherCode: daily.variables(0)!.valuesArray()!,
           temperature2mMax: daily.variables(1)!.valuesArray()!,
           temperature2mMin: daily.variables(2)!.valuesArray()!,
+          precipitationSum: daily.variables(3)!.valuesArray()!,
         },
         hourly: {
           time: range(
