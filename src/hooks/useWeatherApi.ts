@@ -64,7 +64,7 @@ export const useWeatherApi = (params: useWeatherParams) => {
             hourly.interval()
           ).map((t) => new Date((t + utcOffsetSeconds) * 1000)),
           temperature2m: hourly.variables(0)!.valuesArray()!,
-          rain: hourly.variables(1)!.valuesArray()!,
+          precipitation: hourly.variables(1)!.valuesArray()!,
         },
         latitude,
         longitude,
@@ -75,7 +75,7 @@ export const useWeatherApi = (params: useWeatherParams) => {
     {
       retry: false,
       enabled: Boolean(params.latitude) && Boolean(params.longitude),
-      staleTime: 60000,
+      staleTime: 30 * 60 * 1000,
     }
   );
 };

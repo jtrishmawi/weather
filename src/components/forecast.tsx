@@ -56,22 +56,24 @@ export const Forecast = (data: ForecastProps) => {
   });
 
   return (
-    <Tabs defaultValue="three_days">
-      <div className="flex justify-between items-center">
-        <h2 className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-0">
-          Forecast
-        </h2>
-        <TabsList>
-          <TabsTrigger value="three_days">3 days</TabsTrigger>
-          <TabsTrigger value="all">{casts.length} days</TabsTrigger>
-        </TabsList>
-      </div>
-      <TabsContent value="three_days">
-        <ForecastList casts={[...casts].slice(0, 3)} />
-      </TabsContent>
-      <TabsContent value="all">
-        <ForecastList casts={casts} />
-      </TabsContent>
-    </Tabs>
+    <div className="@container/current">
+      <Tabs defaultValue="three_days" className="@lg/current:px-6 p-4">
+        <div className="flex justify-between items-center">
+          <h2 className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-0">
+            Forecast
+          </h2>
+          <TabsList>
+            <TabsTrigger value="three_days">3 days</TabsTrigger>
+            <TabsTrigger value="all">{casts.length} days</TabsTrigger>
+          </TabsList>
+        </div>
+        <TabsContent value="three_days">
+          <ForecastList casts={[...casts].slice(0, 3)} />
+        </TabsContent>
+        <TabsContent value="all">
+          <ForecastList casts={casts} />
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 };

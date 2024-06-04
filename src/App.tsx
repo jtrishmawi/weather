@@ -45,7 +45,7 @@ export const App = () => {
   if (!weather.data || !geocoding.data) {
     return <p>No data</p>;
   }
-  console.log(weather.data?.current);
+
   return (
     <div className="w-full h-screen flex flex-col px-8 pb-4">
       <div className="flex items-center justify-between py-4 col-span-2">
