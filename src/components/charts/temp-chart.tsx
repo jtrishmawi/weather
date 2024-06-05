@@ -7,12 +7,14 @@ import {
   Line,
   LineChart,
   ReferenceArea,
+  ReferenceLine,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
 } from "recharts";
 import { AxisDomain } from "recharts/types/util/types";
+import { CustomTooltip } from "@/components/charts/custom-tooltip";
 
 type StateType = {
   tempCharts: { temperature: number; time: number }[];
@@ -161,13 +163,26 @@ export const TempChart = ({
             type="number"
             yAxisId={"1"}
           />
-          <Tooltip />
+          <Tooltip
+            content={(props) => CustomTooltip({ ...props, units: "°C" })}
+          />
           <Line
             dataKey={"temperature"}
             stroke="#58c2d8"
             label={(props) => CustomLabel({ ...props, color: "#58c2d8" })}
             yAxisId={"1"}
             type={"natural"}
+          />
+          <ReferenceLine
+            x={new Date().getTime()}
+            stroke="red"
+            label={{
+              position: "bottom",
+              value: "Now",
+              fill: "red",
+              fontSize: 14,
+            }}
+            yAxisId="1"
           />
           {state.refAreaLeft && state.refAreaRight ? (
             <ReferenceArea

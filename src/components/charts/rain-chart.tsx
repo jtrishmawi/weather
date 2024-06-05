@@ -6,6 +6,7 @@ import {
   BarChart,
   CartesianGrid,
   ReferenceArea,
+  ReferenceLine,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -13,6 +14,7 @@ import {
 } from "recharts";
 import { Button } from "@/components/ui/button";
 import { AxisDomain } from "recharts/types/util/types";
+import { CustomTooltip } from "@/components/charts/custom-tooltip";
 
 type StateType = {
   rainCharts: { rain: number; time: number }[];
@@ -162,7 +164,9 @@ export const RainChart = ({
             type="number"
             yAxisId={"1"}
           />
-          <Tooltip />
+          <Tooltip
+            content={(props) => CustomTooltip({ ...props, units: "mm" })}
+          />
           <Bar
             dataKey={"rain"}
             fill="#58c2d8"
@@ -175,6 +179,17 @@ export const RainChart = ({
             }
             yAxisId={"1"}
             type={"natural"}
+          />
+          <ReferenceLine
+            x={new Date().getTime()}
+            stroke="red"
+            label={{
+              position: "bottom",
+              value: "Now",
+              fill: "red",
+              fontSize: 14,
+            }}
+            yAxisId="1"
           />
           {state.refAreaLeft && state.refAreaRight ? (
             <ReferenceArea
