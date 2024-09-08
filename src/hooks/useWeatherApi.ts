@@ -1,6 +1,6 @@
 import { range } from "@/lib/utils";
 import { fetchWeather } from "@/services/weather";
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 
 type useWeatherParams = {
   latitude: number | null;
@@ -8,9 +8,12 @@ type useWeatherParams = {
 };
 
 export const useWeatherApi = (params: useWeatherParams) => {
-  return useQuery(
-    ["weather", { latitude: params.latitude, longitude: params.longitude }],
-    async () => {
+  return useQuery({
+    queryKey: [
+      "weather",
+      { latitude: params.latitude, longitude: params.longitude },
+    ],
+    queryFn: async () => {
       if (!params.latitude || !params.longitude) {
         return Promise.reject(new Error("latitude and longitude are required"));
       }
@@ -76,10 +79,8 @@ export const useWeatherApi = (params: useWeatherParams) => {
 
       return weatherData;
     },
-    {
-      retry: false,
-      enabled: Boolean(params.latitude) && Boolean(params.longitude),
-      staleTime: 30 * 60 * 1000,
-    }
-  );
+    retry: false,
+    enabled: Boolean(params.latitude) && Boolean(params.longitude),
+    staleTime: 30 * 60 * 1000,
+  });
 };

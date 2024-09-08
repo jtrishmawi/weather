@@ -2,11 +2,6 @@ import { Forecast } from "@/components/forecast";
 import { Map } from "@/components/map";
 import { ModeToggle } from "@/components/mode-toggle";
 import { OverviewChart } from "@/components/overview-chart";
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { useReverseGeocoding } from "@/hooks/useReverseGeocoding";
 import { useWeatherApi } from "@/hooks/useWeatherApi";
@@ -15,8 +10,8 @@ import { Button } from "./components/ui/button";
 
 export const App = () => {
   const geolocation = useGeolocation();
-  const weather = useWeatherApi(geolocation.data!);
-  const geocoding = useReverseGeocoding(geolocation.data!);
+  const weather = useWeatherApi(geolocation.data);
+  const geocoding = useReverseGeocoding(geolocation.data);
 
   if (geolocation.isLoading) {
     return (
@@ -67,7 +62,7 @@ export const App = () => {
     );
   }
 
-  if (geolocation.isIdle || weather.isIdle || geocoding.isIdle) {
+  if (geolocation.isFetching || weather.isFetching || geocoding.isFetching) {
     return (
       <p className="w-full h-screen flex flex-col items-center justify-center gap-4">
         Loading data...
@@ -79,46 +74,28 @@ export const App = () => {
     <div className="w-full h-screen flex flex-col px-8 pb-4">
       <div className="flex items-center justify-between py-4 col-span-2">
         <h1 className="text-3xl font-bold">WeatherApp</h1>
-        <ModeToggle />
+        <div className="flex gap-2">
+          <Button onClick={() => weather.refetch()} variant="outline">
+            Reload
+          </Button>
+          <ModeToggle />
+        </div>
       </div>
-
-      <ResizablePanelGroup direction="vertical">
-        <ResizablePanel>
-          <ResizablePanelGroup direction="horizontal">
-            <ResizablePanel className="rounded-xl border-2 dark:bg-neutral-800 bg-neutral-100">
-              <CurrentCard
-                geocoding={geocoding.data!}
-                weather={weather.data!}
-              />
-            </ResizablePanel>
-            <ResizableHandle withHandle />
-            <ResizablePanel className="rounded-xl border-2 overflow-hidden dark:bg-neutral-800 bg-neutral-100">
-              <Map
-                latitude={weather.data!.latitude}
-                longitude={weather.data!.longitude}
-                city={geocoding.data!.city}
-                country={geocoding.data!.countryName}
-                temperature={weather.data!.current.temperature2m}
-                humidity={weather.data!.current.relativeHumidity2m}
-                weatherCode={weather.data!.current.weatherCode}
-                isDay={weather.data!.current.isDay}
-              />
-            </ResizablePanel>
-          </ResizablePanelGroup>
-        </ResizablePanel>
-        <ResizableHandle withHandle />
-        <ResizablePanel>
-          <ResizablePanelGroup direction="horizontal">
-            <ResizablePanel className="rounded-xl border-2 dark:bg-neutral-800 bg-neutral-100">
-              <OverviewChart {...weather.data!.hourly} />
-            </ResizablePanel>
-            <ResizableHandle withHandle />
-            <ResizablePanel className="rounded-xl border-2 dark:bg-neutral-800 bg-neutral-100">
-              <Forecast {...weather.data!.daily} />
-            </ResizablePanel>
-          </ResizablePanelGroup>
-        </ResizablePanel>
-      </ResizablePanelGroup>
+      <div className="grid grid-cols-2">
+        <CurrentCard geocoding={geocoding.data!} weather={weather.data!} />
+        <Map
+          latitude={weather.data!.latitude}
+          longitude={weather.data!.longitude}
+          city={geocoding.data!.city}
+          country={geocoding.data!.countryName}
+          temperature={weather.data!.current.temperature2m}
+          humidity={weather.data!.current.relativeHumidity2m}
+          weatherCode={weather.data!.current.weatherCode}
+          isDay={weather.data!.current.isDay}
+        />
+        <OverviewChart {...weather.data!.hourly} />
+        <Forecast {...weather.data!.daily} />
+      </div>
     </div>
   );
 };

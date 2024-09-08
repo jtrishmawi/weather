@@ -1,4 +1,4 @@
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 
 type GeolocationParams = {
   latitude: number | null;
@@ -12,9 +12,9 @@ export const useGeolocation = (
     maximumAge: 3600000,
   }
 ) => {
-  return useQuery(
-    "geolocation",
-    () => {
+  return useQuery({
+    queryKey: ["geolocation"],
+    queryFn: () => {
       return new Promise<GeolocationParams>((resolve, reject) => {
         navigator.geolocation.getCurrentPosition(
           (position) => {
@@ -30,11 +30,9 @@ export const useGeolocation = (
         );
       });
     },
-    {
-      placeholderData: {
-        latitude: null,
-        longitude: null,
-      },
-    }
-  );
+    initialData: {
+      latitude: null,
+      longitude: null,
+    },
+  });
 };

@@ -1,5 +1,5 @@
 import { reverseGeocode } from "@/services/reverse-geocoding";
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 
 type GeocodingParams = {
   latitude: number | null;
@@ -7,7 +7,9 @@ type GeocodingParams = {
 };
 
 export const useReverseGeocoding = (params: GeocodingParams) => {
-  return useQuery(["geocoding", params], () => reverseGeocode(params), {
+  return useQuery({
+    queryKey: ["geocoding", params],
+    queryFn: () => reverseGeocode(params),
     enabled: Boolean(params.latitude) && Boolean(params.longitude),
     staleTime: 60000,
   });
