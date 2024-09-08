@@ -4,13 +4,8 @@ import { Compass } from "./compass";
 import { ScrollArea } from "./ui/scroll-area";
 
 export const CurrentCard = ({
-  geocoding,
   weather,
 }: {
-  geocoding: {
-    city: string;
-    countryName: string;
-  };
   weather: {
     current: {
       time: Date;
@@ -34,16 +29,6 @@ export const CurrentCard = ({
     <div className="@container/current">
       <div className="h-full flex flex-col justify-between gap-4 @lg/current:px-6 p-4">
         <div className="space-y-4">
-          <h2 className="scroll-m-20 text-3xl font-semibold tracking-tight first:mt-0">
-            {geocoding.city}, {geocoding.countryName}
-          </h2>
-          <small className="text-sm font-medium leading-none">
-            <span className="sr-only">Updated: </span>
-            <time dateTime={weather.current?.time.toString()}>
-              <span className="font-light">Last updated:</span>&nbsp;
-              {weather.current?.time.toLocaleString()}
-            </time>
-          </small>
           <blockquote className="italic">
             The current weather condition is&nbsp;
             <span className="font-semibold lowercase">
@@ -67,7 +52,6 @@ export const CurrentCard = ({
                 weather.current.isDay ? "day" : "night"
               )}
               className="aspect-square w-auto h-[100px] shadow rounded-full invert dark:invert-0"
-
             />
             <div className="text-5xl font-bold">
               {Math.round(weather.current.temperature2m)}&deg;C
@@ -122,6 +106,13 @@ export const CurrentCard = ({
             <dd className="font-medium">{weather.current.snowfall}cm</dd>
           </dl>
         </ScrollArea>
+        <small className="text-sm font-medium leading-none ml-auto">
+          <span className="sr-only">Updated: </span>
+          <time dateTime={weather.current?.time.toString()}>
+            <span className="font-light">Last updated:</span>&nbsp;
+            {weather.current?.time.toLocaleString()}
+          </time>
+        </small>
       </div>
     </div>
   );
