@@ -40,12 +40,12 @@ export const CurrentCard = ({
           <small className="text-sm font-medium leading-none">
             <span className="sr-only">Updated: </span>
             <time dateTime={weather.current?.time.toString()}>
-              <span className="font-light">Last updated: </span>{" "}
+              <span className="font-light">Last updated:</span>&nbsp;
               {weather.current?.time.toLocaleString()}
             </time>
           </small>
           <blockquote className="italic">
-            The weather is{" "}
+            The current weather condition is&nbsp;
             <span className="font-semibold lowercase">
               {getWMOCode(
                 weather.current.weatherCode.toString(),

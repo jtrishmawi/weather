@@ -22,6 +22,7 @@ export const App = () => {
       </p>
     );
   }
+
   if (weather.isLoading) {
     return (
       <p className="w-full h-screen flex items-center justify-center gap-4">
@@ -29,6 +30,7 @@ export const App = () => {
       </p>
     );
   }
+  
   if (geocoding.isLoading) {
     return (
       <p className="w-full h-screen flex items-center justify-center gap-4">

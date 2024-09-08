@@ -85,7 +85,7 @@ export const Map = ({
               {city}, {country}
             </p>
             <p className="text-sm">
-              {temperature.toFixed(0)}°C{" "}
+              {temperature.toFixed(0)}°C&nbsp;
               {getWMOCode(weatherCode.toString(), isDay ? "day" : "night")}
             </p>
             <p className="text-sm">{humidity.toFixed(0)}% humidity</p>
