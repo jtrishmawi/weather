@@ -9,7 +9,6 @@ export const CustomTooltip = ({
 }: {
   units: string;
 } & TooltipProps<ValueType, NameType>) => {
-  console.log(payload);
   if (active && payload && payload.length) {
     const formatter = new Intl.DateTimeFormat(undefined, {
       // year: "2-digit",
@@ -20,7 +19,7 @@ export const CustomTooltip = ({
     });
     return (
       <div className="rounded-md border bg-popover px-3 py-1.5 text-sm text-popover-foreground shadow-md animate-in fade-in-0 zoom-in-95">
-        <p className="label">{`${formatter.format(new Date(label))} : ${
+        <p className="label">{`${formatter.format(new Date(label))} ➡️ ${
           payload[0].value
         }${units}`}</p>
       </div>

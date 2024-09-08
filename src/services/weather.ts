@@ -39,7 +39,7 @@ export const fetchWeather = async (params: WeatherParams) => {
     ...params,
   };
   const url = "https://api.open-meteo.com/v1/forecast";
-  const responses = await fetchWeatherApi(url, params);
+  const responses = await fetchWeatherApi(url, params, 1);
 
   // Process first location. Add a for-loop for multiple locations or weather models
   const response = responses[0];

@@ -20,9 +20,9 @@ export const useWeatherApi = (params: useWeatherParams) => {
       });
 
       // Attributes for timezone and location
-      const utcOffsetSeconds = response.utcOffsetSeconds();
-      //   const timezone = response.timezone();
-      //   const timezoneAbbreviation = response.timezoneAbbreviation();
+      // const utcOffsetSeconds = response.utcOffsetSeconds(); - this is not eeded for France
+      // const timezone = response.timezone();
+      // const timezoneAbbreviation = response.timezoneAbbreviation();
       const latitude = response.latitude();
       const longitude = response.longitude();
       const current = response.current()!;
@@ -32,7 +32,8 @@ export const useWeatherApi = (params: useWeatherParams) => {
       // Note: The order of weather variables in the URL query and the indices below need to match!
       const weatherData = {
         current: {
-          time: new Date((Number(current.time()) + utcOffsetSeconds) * 1000),
+          time: new Date(Number(current.time()) * 1000),
+          // time: new Date((Number(current.time()) + utcOffsetSeconds) * 1000),
           temperature2m: current.variables(0)!.value(),
           relativeHumidity2m: current.variables(1)!.value(),
           apparentTemperature: current.variables(2)!.value(),
@@ -52,7 +53,8 @@ export const useWeatherApi = (params: useWeatherParams) => {
             Number(daily.time()),
             Number(daily.timeEnd()),
             daily.interval()
-          ).map((t) => new Date((t + utcOffsetSeconds) * 1000)),
+          ).map((t) => new Date(t * 1000)),
+          // ).map((t) => new Date((t + utcOffsetSeconds) * 1000)),
           weatherCode: daily.variables(0)!.valuesArray()!,
           temperature2mMax: daily.variables(1)!.valuesArray()!,
           temperature2mMin: daily.variables(2)!.valuesArray()!,
@@ -63,7 +65,8 @@ export const useWeatherApi = (params: useWeatherParams) => {
             Number(hourly.time()),
             Number(hourly.timeEnd()),
             hourly.interval()
-          ).map((t) => new Date((t + utcOffsetSeconds) * 1000)),
+          ).map((t) => new Date(t * 1000)),
+          // ).map((t) => new Date((t + utcOffsetSeconds) * 1000)),
           temperature2m: hourly.variables(0)!.valuesArray()!,
           precipitation: hourly.variables(1)!.valuesArray()!,
         },
