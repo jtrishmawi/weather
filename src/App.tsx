@@ -49,7 +49,7 @@ export const App = () => {
   return (
     <div className="w-full h-screen flex flex-col px-8 pb-4">
       <div className="flex items-center justify-between py-4 col-span-2">
-        <h1 className="text-3xl font-bold">Weather App</h1>
+        <h1 className="text-3xl font-bold">WeatherApp</h1>
         <ModeToggle />
       </div>
 
