@@ -107,16 +107,12 @@ export const RainChart = ({
   };
 
   return (
-    <div className="select-none flex flex-col h-full">
-      <Button
-        onClick={zoomOut}
-        type="button"
-        variant={"outline"}
-        className="self-start"
+    <div className="select-none flex flex-col relative h-full">
+      <ResponsiveContainer
+        width="100%"
+        height="100%"
+        className="flex-1 min-h-64"
       >
-        Reset
-      </Button>
-      <ResponsiveContainer width="100%" height="100%" className={"flex-1"}>
         <BarChart
           width={500}
           height={400}
@@ -128,7 +124,7 @@ export const RainChart = ({
             bottom: 5,
           }}
           onMouseDown={(e) => {
-            if (e.activeLabel) {
+            if (e?.activeLabel) {
               setState({
                 ...state,
                 refAreaLeft: new Date(e.activeLabel).getTime().toString(),
@@ -136,7 +132,7 @@ export const RainChart = ({
             }
           }}
           onMouseMove={(e) => {
-            if (state.refAreaLeft && e.activeLabel) {
+            if (state.refAreaLeft && e?.activeLabel) {
               setState({
                 ...state,
                 refAreaRight: new Date(e.activeLabel).getTime().toString(),
@@ -147,7 +143,7 @@ export const RainChart = ({
         >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis
-            dataKey={"time"}
+            dataKey="time"
             allowDataOverflow
             padding={{ left: 30, right: 30 }}
             height={120}
@@ -156,19 +152,19 @@ export const RainChart = ({
             type="number"
           />
           <YAxis
-            dataKey={"rain"}
+            dataKey="rain"
             allowDataOverflow
             domain={[state.bottom, state.top] as AxisDomain}
             tickFormatter={(v) => Math.round(v).toString()}
-            unit={"mm"}
+            unit="mm"
             type="number"
-            yAxisId={"1"}
+            yAxisId="1"
           />
           <Tooltip
             content={(props) => CustomTooltip({ ...props, units: "mm" })}
           />
           <Bar
-            dataKey={"rain"}
+            dataKey="rain"
             fill="#58c2d8"
             label={(props) =>
               +props.value !== 0 ? (
@@ -177,8 +173,8 @@ export const RainChart = ({
                 <></>
               )
             }
-            yAxisId={"1"}
-            type={"natural"}
+            yAxisId="1"
+            type="natural"
           />
           <ReferenceLine
             x={new Date().getTime()}
@@ -201,6 +197,15 @@ export const RainChart = ({
           ) : null}
         </BarChart>
       </ResponsiveContainer>
+      <Button
+        onClick={zoomOut}
+        type="button"
+        variant={"outline"}
+        size="sm"
+        className="absolute bottom-0 left-6"
+      >
+        Reset
+      </Button>
     </div>
   );
 };

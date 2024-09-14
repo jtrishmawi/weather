@@ -88,7 +88,7 @@ export const App = () => {
         </Button>
         <ModeToggle />
       </div>
-      <div className="flex flex-col lg:flex-row lg:flex-wrap">
+      <div className="flex flex-col lg:flex-row lg:flex-wrap gap-y-4">
         <div className="lg:basis-1/2 xl:basis-2/3 order-1">
           <CurrentCard weather={weather.data!} />
         </div>

@@ -33,10 +33,10 @@ export const OverviewChart = (data: OverviewChartProps) => {
     <div className="@container/current h-full">
       <Tabs
         defaultValue="temperature"
-        className="flex flex-col  h-full @lg/current:px-6 p-4"
+        className="flex flex-col gap-4 h-full @lg/current:px-6 @sm/current:px-4"
       >
-        <div className="flex justify-between items-center">
-          <h2 className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-0">
+        <div className="flex justify-between items-center gap-4">
+          <h2 className="scroll-m-20 pb-2 text-2xl sm:text-3xl font-semibold tracking-tight first:mt-0">
             Overview
           </h2>
           <TabsList>

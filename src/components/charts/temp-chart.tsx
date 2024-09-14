@@ -106,16 +106,12 @@ export const TempChart = ({
   };
 
   return (
-    <div className="select-none flex flex-col h-full">
-      <Button
-        onClick={zoomOut}
-        type="button"
-        variant={"outline"}
-        className="self-start"
+    <div className="select-none flex flex-col relative h-full">
+      <ResponsiveContainer
+        width="100%"
+        height="100%"
+        className="flex-1 min-h-64"
       >
-        Reset
-      </Button>
-      <ResponsiveContainer width="100%" height="100%" className={"flex-1"}>
         <LineChart
           width={500}
           height={400}
@@ -127,7 +123,7 @@ export const TempChart = ({
             bottom: 5,
           }}
           onMouseDown={(e) => {
-            if (e.activeLabel) {
+            if (e?.activeLabel) {
               setState({
                 ...state,
                 refAreaLeft: new Date(e.activeLabel).getTime().toString(),
@@ -135,7 +131,7 @@ export const TempChart = ({
             }
           }}
           onMouseMove={(e) => {
-            if (state.refAreaLeft && e.activeLabel) {
+            if (state.refAreaLeft && e?.activeLabel) {
               setState({
                 ...state,
                 refAreaRight: new Date(e.activeLabel).getTime().toString(),
@@ -155,23 +151,23 @@ export const TempChart = ({
             type="number"
           />
           <YAxis
-            dataKey={"temperature"}
+            dataKey="temperature"
             allowDataOverflow
             domain={[state.bottom, state.top] as AxisDomain}
             tickFormatter={(v) => Math.round(v).toString()}
-            unit={"°C"}
+            unit="°C"
             type="number"
-            yAxisId={"1"}
+            yAxisId="1"
           />
           <Tooltip
             content={(props) => CustomTooltip({ ...props, units: "°C" })}
           />
           <Line
-            dataKey={"temperature"}
+            dataKey="temperature"
             stroke="#58c2d8"
             label={(props) => CustomLabel({ ...props, color: "#58c2d8" })}
-            yAxisId={"1"}
-            type={"natural"}
+            yAxisId="1"
+            type="natural"
           />
           <ReferenceLine
             x={new Date().getTime()}
@@ -194,6 +190,15 @@ export const TempChart = ({
           ) : null}
         </LineChart>
       </ResponsiveContainer>
+      <Button
+        onClick={zoomOut}
+        type="button"
+        variant="outline"
+        size="sm"
+        className="absolute bottom-0 left-6"
+      >
+        Reset
+      </Button>
     </div>
   );
 };

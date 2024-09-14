@@ -31,8 +31,8 @@ export const Forecast = (data: ForecastProps) => {
 
   return (
     <div className="@container/current flex flex-col">
-      <div className="flex items-center @lg/current:px-6 p-4">
-        <h2 className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-0">
+      <div className="flex items-center @lg/current:px-6 @sm/current:px-4">
+        <h2 className="scroll-m-20 pb-2 text-2xl sm:text-3xl font-semibold tracking-tight first:mt-0">
           Forecast
         </h2>
       </div>
