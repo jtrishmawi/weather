@@ -41,30 +41,28 @@ export const Forecast = (data: ForecastProps) => {
           return (
             <div
               key={index}
-              className="flex justify-around items-center border rounded-sm mb-2 px-4"
+              className="flex justify-around items-center border rounded-sm mb-2 px-4 gap-2 text-sm"
             >
               <div className="capitalize">{formatter.format(cast.time)}</div>
               <img
                 src={getWMOImageUrl(cast.weatherCode.toString())}
                 alt={getWMOCode(cast.weatherCode.toString())}
-                className="shadow rounded-full m-2 invert dark:invert-0"
+                className="invert dark:invert-0 h-[70px] aspect-square object-none"
               />
-              <div>
-                <span className="text-lg">
+              <div className="flex flex-col items-end">
+                <div className="text-lg">
                   {cast.temperature2mMax.toFixed(0)}°C
-                </span>
-                &nbsp;/&nbsp;
-                <span className="text-sm">
-                  {cast.temperature2mMin.toFixed(0)}°C
-                </span>
+                </div>
+                <div>{cast.temperature2mMin.toFixed(0)}°C</div>
               </div>
               <div className="capitalize font-medium">
                 {getWMOCode(cast.weatherCode.toString())}
               </div>
-              <div>
-                {cast.precipitationSum > 0 && (
-                  <span>{cast.precipitationSum.toFixed(1)}&nbsp;mm</span>
-                )}
+              <div className="whitespace-normal break-words">
+                {cast.precipitationSum === 0
+                  ? 0
+                  : cast.precipitationSum.toFixed(2)}
+                mm{" "}
               </div>
             </div>
           );
