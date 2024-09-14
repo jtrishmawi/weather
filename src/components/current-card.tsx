@@ -44,8 +44,8 @@ export const CurrentCard = ({
             </time>
           </small>
         </p>
-        <div className="flex items-center justify-around flex-wrap gap-6">
-          <div className="flex items-center">
+        <div className="flex items-center justify-evenly gap-6 flex-wrap pb-4">
+          <div className="flex items-center justify-around flex-grow max-w-64">
             <img
               src={getWMOImageUrl(
                 weather.current.weatherCode.toString(),
@@ -55,25 +55,32 @@ export const CurrentCard = ({
                 weather.current.weatherCode.toString(),
                 weather.current.isDay ? "day" : "night"
               )}
-              className="aspect-square w-auto h-[100px] shadow rounded-full invert dark:invert-0"
+              className="aspect-square h-[80px] object-none invert dark:invert-0"
             />
             <div className="text-5xl font-bold">
-              {Math.round(weather.current.temperature2m)}&deg;C
+              {Math.round(weather.current.temperature2m)}
+              <span className="text-3xl">&deg;C</span>
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            <Compass
-              direction={weather.current.windDirection10m}
-              className="aspect-square w-auto h-[80px]"
-            />
+          <div className="flex items-center justify-around flex-grow max-w-64">
+            <div className="p-[10px]">
+              <Compass
+                direction={weather.current.windDirection10m}
+                className="aspect-square w-auto h-[60px]"
+              />
+            </div>
             <div className="text-5xl font-bold">
-              {Math.round(weather.current.windSpeed10m)}km/h
+              {Math.round(weather.current.windSpeed10m)}
+              <span className="text-3xl">km/h</span>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <DropletsIcon className="aspect-square w-auto h-[80px]" />
+          <div className="flex items-center justify-around flex-grow max-w-64">
+            <div className="p-[10px]">
+              <DropletsIcon className="aspect-square w-auto h-[60px]" />
+            </div>
             <div className="text-5xl font-bold">
-              {Math.round(weather.current.relativeHumidity2m)}%
+              {Math.round(weather.current.relativeHumidity2m)}
+              <span className="text-3xl">%</span>
             </div>
           </div>
         </div>
@@ -128,7 +135,7 @@ export const CurrentCard = ({
           <span className="sr-only">Updated: </span>
           <time dateTime={weather.current?.time.toString()}>
             <span className="font-light">Last updated:</span>&nbsp;
-            {weather.current?.time.toLocaleString()}
+            {timeAgo(weather.current?.time)}
           </time>
         </small>
       </div>
