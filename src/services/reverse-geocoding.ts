@@ -63,7 +63,6 @@ export const reverseGeocode = async ({
   );
   url.searchParams.append("latitude", String(latitude));
   url.searchParams.append("longitude", String(longitude));
-  url.searchParams.append("localityLanguage", "fr");
   const response = await fetch(url);
   return response.json();
 };
