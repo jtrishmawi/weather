@@ -73,7 +73,7 @@ export const App = () => {
   }
 
   return (
-    <div className="w-full h-screen flex flex-col px-8 pb-4">
+    <div className="w-full h-screen flex flex-col px-2 sm:px-8 pb-4">
       <div className="flex items-center py-4 gap-4">
         <h1 className="text-xl md:text-2xl lg:text-3xl font-bold tracking-tight">
           <span className="hidden sm:inline-block">Weather in</span>{" "}

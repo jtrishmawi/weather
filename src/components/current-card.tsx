@@ -25,6 +25,8 @@ export const CurrentCard = ({
     };
   };
 }) => {
+  const { format } = new Intl.NumberFormat();
+
   return (
     <div className="@container/current">
       <div className="h-full flex flex-col justify-between gap-4 lg:px-6 p-4">
@@ -87,40 +89,40 @@ export const CurrentCard = ({
         <dl className="grid grid-cols-2 gap-4 @md/current:grid-cols-4 @2xl/current:grid-cols-6 justify-evenly items-center">
           <dt className="@md/current:text-right">Temperature</dt>
           <dd className="font-medium text-right @md/current:text-left">
-            {weather.current.temperature2m.toFixed(2)}&deg;C
+            {format(weather.current.temperature2m)}&deg;C
           </dd>
           <dt className="@md/current:text-right">Feels like</dt>
           <dd className="font-medium text-right @md/current:text-left">
-            {weather.current.apparentTemperature.toFixed(2)}
+            {format(weather.current.apparentTemperature)}
             &deg;C
           </dd>
           <dt className="@md/current:text-right">Humidity</dt>
           <dd className="font-medium text-right @md/current:text-left">
-            {weather.current.relativeHumidity2m}%
+            {format(weather.current.relativeHumidity2m)}%
           </dd>
           <dt className="@md/current:text-right">Cloud coverage</dt>
           <dd className="font-medium text-right @md/current:text-left">
-            {weather.current.cloudCover}%
+            {format(weather.current.cloudCover)}%
           </dd>
           <dt className="@md/current:text-right">Rain</dt>
           <dd className="font-medium text-right @md/current:text-left">
-            {weather.current.rain}mm
+            {format(weather.current.rain)}mm
           </dd>
           <dt className="@md/current:text-right">Wind</dt>
           <dd className="font-medium text-right @md/current:text-left">
-            {weather.current.windSpeed10m.toFixed(1)}km/h
+            {format(weather.current.windSpeed10m)}km/h
           </dd>
           <dt className="@md/current:text-right">Precipitation</dt>
           <dd className="font-medium text-right @md/current:text-left">
-            {weather.current.precipitation}mm
+            {format(weather.current.precipitation)}mm
           </dd>
           <dt className="@md/current:text-right">Wind gusts</dt>
           <dd className="font-medium text-right @md/current:text-left">
-            {weather.current.windGusts10m.toFixed(1)}km/h
+            {format(weather.current.windGusts10m)}km/h
           </dd>
           <dt className="@md/current:text-right">Showers</dt>
           <dd className="font-medium text-right @md/current:text-left">
-            {weather.current.showers}mm
+            {format(weather.current.showers)}mm
           </dd>
           <dt className="@md/current:text-right">Wind direction</dt>
           <dd className="font-medium text-right @md/current:text-left">

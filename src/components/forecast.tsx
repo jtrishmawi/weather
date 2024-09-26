@@ -20,7 +20,7 @@ export const Forecast = (data: ForecastProps) => {
     };
   });
 
-  const formatter = new Intl.DateTimeFormat(undefined, {
+  const { format: dateFormat } = new Intl.DateTimeFormat(undefined, {
     // year: "2-digit",
     month: "short",
     weekday: "short",
@@ -28,6 +28,8 @@ export const Forecast = (data: ForecastProps) => {
     // hour: "2-digit",
     // minute: "2-digit",
   });
+
+  const { format: numberFormat } = new Intl.NumberFormat();
 
   return (
     <div className="@container/current flex flex-col">
@@ -43,7 +45,7 @@ export const Forecast = (data: ForecastProps) => {
               key={index}
               className="flex justify-around items-center border rounded-sm mb-2 px-4 gap-2 text-sm"
             >
-              <div className="capitalize">{formatter.format(cast.time)}</div>
+              <div className="capitalize">{dateFormat(cast.time)}</div>
               <img
                 src={getWMOImageUrl(cast.weatherCode.toString())}
                 alt={getWMOCode(cast.weatherCode.toString())}
@@ -51,18 +53,15 @@ export const Forecast = (data: ForecastProps) => {
               />
               <div className="flex flex-col items-end">
                 <div className="text-lg">
-                  {cast.temperature2mMax.toFixed(0)}°C
+                  {numberFormat(cast.temperature2mMax)}°C
                 </div>
-                <div>{cast.temperature2mMin.toFixed(0)}°C</div>
+                <div>{numberFormat(cast.temperature2mMin)}°C</div>
               </div>
               <div className="capitalize font-medium">
                 {getWMOCode(cast.weatherCode.toString())}
               </div>
               <div className="whitespace-normal break-words">
-                {cast.precipitationSum === 0
-                  ? 0
-                  : cast.precipitationSum.toFixed(2)}
-                mm{" "}
+                {numberFormat(cast.precipitationSum)}mm
               </div>
             </div>
           );

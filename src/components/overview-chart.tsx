@@ -14,6 +14,8 @@ export const OverviewChart = (data: OverviewChartProps) => {
     const tempCharts: { temperature: number; time: number }[] = [];
     const rainCharts: { rain: number; time: number }[] = [];
     data.time.forEach((t, index) => {
+      if (t.toDateString() !== new Date().toDateString()) return;
+
       const time = t.getTime();
 
       tempCharts.push({

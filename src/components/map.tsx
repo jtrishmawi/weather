@@ -33,6 +33,7 @@ export const Map = ({
   const [size, setSize] = useState({ width: 0, height: 0 });
   const { theme } = useTheme();
   const color = theme === "dark" ? "#686870" : "#1e1f24";
+  const { format: numberFormat } = new Intl.NumberFormat();
 
   useEffect(() => {
     setSize({
@@ -85,10 +86,10 @@ export const Map = ({
               {city}, {country}
             </p>
             <p className="text-sm">
-              {temperature.toFixed(0)}°C&nbsp;
+              {numberFormat(temperature)}°C&nbsp;
               {getWMOCode(weatherCode.toString(), isDay ? "day" : "night")}
             </p>
-            <p className="text-sm">{humidity.toFixed(0)}% humidity</p>
+            <p className="text-sm">{numberFormat(humidity)}% humidity</p>
           </div>
         </foreignObject>
       </Annotation>

@@ -118,8 +118,8 @@ export const TempChart = ({
           data={state.tempCharts}
           margin={{
             top: 5,
-            right: 30,
-            left: 20,
+            right: 0,
+            left: 0,
             bottom: 5,
           }}
           onMouseDown={(e) => {
@@ -144,9 +144,9 @@ export const TempChart = ({
           <XAxis
             dataKey="time"
             allowDataOverflow
-            padding={{ left: 30, right: 30 }}
+            // padding={{ left: 30, right: 30 }}
             height={120}
-            tick={(props) => CustomTick({ ...props, angle: -45 })}
+            tick={(props) => CustomTick({ ...props, angle: -60 })}
             domain={[state.left, state.right] as AxisDomain}
             type="number"
           />
