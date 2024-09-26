@@ -29,7 +29,13 @@ export const Forecast = (data: ForecastProps) => {
     // minute: "2-digit",
   });
 
-  const { format: numberFormat } = new Intl.NumberFormat();
+  const { format: numberFormat } = new Intl.NumberFormat(undefined, {
+    maximumFractionDigits: 0,
+  });
+
+  const { format: decimalFormat } = new Intl.NumberFormat(undefined, {
+    maximumFractionDigits: 2,
+  });
 
   return (
     <div className="@container/current flex flex-col">
@@ -61,7 +67,7 @@ export const Forecast = (data: ForecastProps) => {
                 {getWMOCode(cast.weatherCode.toString())}
               </div>
               <div className="whitespace-normal break-words">
-                {numberFormat(cast.precipitationSum)}mm
+                {decimalFormat(cast.precipitationSum)}mm
               </div>
             </div>
           );

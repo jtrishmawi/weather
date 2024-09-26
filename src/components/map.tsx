@@ -33,7 +33,9 @@ export const Map = ({
   const [size, setSize] = useState({ width: 0, height: 0 });
   const { theme } = useTheme();
   const color = theme === "dark" ? "#686870" : "#1e1f24";
-  const { format: numberFormat } = new Intl.NumberFormat();
+  const { format: numberFormat } = new Intl.NumberFormat(undefined, {
+    maximumFractionDigits: 0,
+  });
 
   useEffect(() => {
     setSize({

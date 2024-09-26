@@ -25,7 +25,9 @@ export const CurrentCard = ({
     };
   };
 }) => {
-  const { format } = new Intl.NumberFormat();
+  const { format } = new Intl.NumberFormat(undefined, {
+    maximumFractionDigits: 2,
+  });
 
   return (
     <div className="@container/current">
