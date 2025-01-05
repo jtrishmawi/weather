@@ -1,6 +1,6 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RainChart } from "@/components/charts/rain-chart";
 import { TempChart } from "@/components/charts/temp-chart";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMemo } from "react";
 
 type OverviewChartProps = {
@@ -14,7 +14,11 @@ export const OverviewChart = (data: OverviewChartProps) => {
     const tempCharts: { temperature: number; time: number }[] = [];
     const rainCharts: { rain: number; time: number }[] = [];
     data.time.forEach((t, index) => {
-      if (t.toDateString() !== new Date().toDateString()) return;
+      const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000);
+      const aDayLater = new Date(Date.now() + 22 * 60 * 60 * 1000);
+
+      if (t < twoHoursAgo || t > aDayLater)
+        return;
 
       const time = t.getTime();
 

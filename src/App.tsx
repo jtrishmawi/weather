@@ -11,7 +11,7 @@ import { Button } from "./components/ui/button";
 export const App = () => {
   const geolocation = useGeolocation();
   const weather = useWeatherApi(geolocation.data);
-  const geocoding = useReverseGeocoding(geolocation.data);
+  const geocoding = useReverseGeocoding(weather.data);
 
   if (geolocation.isLoading) {
     return (
@@ -42,7 +42,10 @@ export const App = () => {
   if (geolocation.isError) {
     return (
       <div className="w-full h-screen flex flex-col items-center justify-center gap-4">
-        <p>Enable permissions to access your location data</p>
+        <p>
+          Enable permissions to access your location data or check or device
+          settings
+        </p>
         <Button onClick={() => window.location.reload()}>Retry</Button>
       </div>
     );

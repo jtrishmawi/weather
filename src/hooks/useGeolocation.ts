@@ -24,6 +24,7 @@ export const useGeolocation = (
             });
           },
           (error) => {
+            console.log(error);
             reject(error);
           },
           options
@@ -34,5 +35,6 @@ export const useGeolocation = (
       latitude: null,
       longitude: null,
     },
+    staleTime: 3600000,
   });
 };
