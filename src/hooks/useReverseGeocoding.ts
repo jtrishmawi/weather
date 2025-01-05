@@ -4,14 +4,23 @@ import { useQuery } from "@tanstack/react-query";
 type GeocodingParams = {
   latitude: number | null;
   longitude: number | null;
-  [key: string]: unknown;
 };
 
 export const useReverseGeocoding = (params?: GeocodingParams) => {
   return useQuery({
-    queryKey: ["geocoding", [params?.latitude, params?.longitude]],
-    queryFn: () => reverseGeocode(params!),
-    enabled: params && Boolean(params.latitude) && Boolean(params.longitude),
-    staleTime: 60000,
+    queryKey: [
+      "geocoding",
+      { latitude: params?.latitude, longitude: params?.longitude },
+    ],
+    queryFn: () => {
+      if (!params || !params.latitude || !params.longitude)
+        return Promise.reject(new Error("latitude and longitude are required"));
+      return reverseGeocode(params);
+    },
+    enabled:
+      !!params &&
+      typeof params.latitude === "number" &&
+      typeof params.longitude === "number",
+    staleTime: 3600000,
   });
 };

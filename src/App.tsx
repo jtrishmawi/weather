@@ -1,12 +1,12 @@
+import { CurrentCard } from "@/components/current-card";
 import { Forecast } from "@/components/forecast";
 import { Map } from "@/components/map";
 import { ModeToggle } from "@/components/mode-toggle";
 import { OverviewChart } from "@/components/overview-chart";
+import { Button } from "@/components/ui/button";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { useReverseGeocoding } from "@/hooks/useReverseGeocoding";
 import { useWeatherApi } from "@/hooks/useWeatherApi";
-import { CurrentCard } from "./components/current-card";
-import { Button } from "./components/ui/button";
 
 export const App = () => {
   const geolocation = useGeolocation();

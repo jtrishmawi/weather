@@ -31,10 +31,6 @@ export const useGeolocation = (
         );
       });
     },
-    initialData: {
-      latitude: null,
-      longitude: null,
-    },
     staleTime: 3600000,
   });
 };
