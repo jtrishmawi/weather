@@ -7,14 +7,14 @@ type useWeatherParams = {
   longitude: number | null;
 };
 
-export const useWeatherApi = (params: useWeatherParams) => {
+export const useWeatherApi = (params?: useWeatherParams) => {
   return useQuery({
     queryKey: [
       "weather",
-      { latitude: params.latitude, longitude: params.longitude },
+      { latitude: params?.latitude, longitude: params?.longitude },
     ],
     queryFn: async () => {
-      if (!params.latitude || !params.longitude) {
+      if (!params?.latitude || !params?.longitude) {
         return Promise.reject(new Error("latitude and longitude are required"));
       }
       const response = await fetchWeather({
@@ -80,7 +80,7 @@ export const useWeatherApi = (params: useWeatherParams) => {
       return weatherData;
     },
     retry: false,
-    enabled: Boolean(params.latitude) && Boolean(params.longitude),
+    enabled: params && Boolean(params.latitude) && Boolean(params.longitude),
     staleTime: 30 * 60 * 1000,
   });
 };
