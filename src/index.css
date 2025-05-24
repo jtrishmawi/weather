@@ -3,7 +3,7 @@
 @import "leaflet/dist/leaflet.css";
 
 @import "leaflet/dist/leaflet.css";
-@plugin 'tailwindcss-animate';
+@import "tw-animate-css";
 @plugin '@tailwindcss/container-queries';
 
 @custom-variant dark (&:is(.dark *));
