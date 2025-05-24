@@ -1,5 +1,8 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
+@import "leaflet/dist/leaflet.css";
+
+@import "leaflet/dist/leaflet.css";
 @plugin 'tailwindcss-animate';
 @plugin '@tailwindcss/container-queries';
 
@@ -140,5 +143,10 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+
+  .leaflet-control-attribution {
+    font-size: 0.5rem !important;
+    padding: 0.25rem !important;
   }
 }

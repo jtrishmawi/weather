@@ -1,5 +1,7 @@
 import { CustomLabel } from "@/components/charts/custom-label";
 import { CustomTick } from "@/components/charts/custom-tick";
+import { CustomTooltip } from "@/components/charts/custom-tooltip";
+import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import {
   Bar,
@@ -12,9 +14,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { Button } from "@/components/ui/button";
 import { AxisDomain } from "recharts/types/util/types";
-import { CustomTooltip } from "@/components/charts/custom-tooltip";
 
 type StateType = {
   rainCharts: { rain: number; time: number }[];
@@ -200,7 +200,7 @@ export const RainChart = ({
       <Button
         onClick={zoomOut}
         type="button"
-        variant={"outline-solid"}
+        variant="outline"
         size="sm"
         className="absolute bottom-0 left-6"
       >

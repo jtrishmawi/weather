@@ -1,12 +1,8 @@
 import { useTheme } from "@/hooks/useTheme";
 import { getWMOCode } from "@/lib/wmo-codes";
-import { useEffect, useRef, useState } from "react";
-import {
-  Annotation,
-  ComposableMap,
-  Geographies,
-  Geography,
-} from "react-simple-maps";
+import L from "leaflet";
+import { useEffect, useState } from "react";
+import { MapContainer, Marker, TileLayer, useMap } from "react-leaflet";
 
 type MapProps = {
   latitude: number;
@@ -19,6 +15,14 @@ type MapProps = {
   isDay: boolean;
 };
 
+function ChangeView({ coords }: { coords: [number, number] }) {
+  const map = useMap();
+  useEffect(() => {
+    map.setView(coords, 6);
+  }, [coords, map]);
+  return null;
+}
+
 export const Map = ({
   latitude,
   longitude,
@@ -29,72 +33,82 @@ export const Map = ({
   weatherCode,
   isDay,
 }: MapProps) => {
-  const ref = useRef<SVGForeignObjectElement>(null);
-  const [size, setSize] = useState({ width: 0, height: 0 });
   const { theme } = useTheme();
-  const color = theme === "dark" ? "#686870" : "#1e1f24";
+  const darkMode = theme === "dark";
+  const [customIcon, setCustomIcon] = useState<L.DivIcon | null>(null);
+
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const nasaDate = yesterday.toISOString().split("T")[0];
+
   const { format: numberFormat } = new Intl.NumberFormat(undefined, {
     maximumFractionDigits: 0,
   });
 
+  const html = `
+      <div class="min-w-[160px] max-w-[240px] border rounded-xl p-4 bg-slate-300 dark:bg-slate-800 border-slate-800 dark:border-slate-300 rounded-br-none whitespace-nowrap text-xs opacity-65">
+        <p>${city}, ${country}</p>
+        <p>
+          ${numberFormat(temperature)}°C&nbsp;
+          ${getWMOCode(weatherCode.toString(), isDay ? "day" : "night")}
+        </p>
+        <p>${numberFormat(humidity)}% humidity</p>
+      </div>
+    `;
+
   useEffect(() => {
-    setSize({
-      width: Number(ref.current?.querySelector("div")?.scrollWidth) + 32,
-      height: Number(ref.current?.querySelector("div")?.scrollHeight) + 32,
+    const tempDiv = document.createElement("div");
+    tempDiv.style.position = "absolute";
+    tempDiv.style.visibility = "hidden";
+    tempDiv.innerHTML = html;
+    document.body.appendChild(tempDiv);
+
+    const content = tempDiv.firstElementChild as HTMLElement;
+    const width = content.offsetWidth;
+    const height = content.offsetHeight;
+
+    document.body.removeChild(tempDiv);
+
+    // Set icon with dynamic anchor (top-right)
+    const icon = new L.DivIcon({
+      html,
+      className: "",
+      iconAnchor: [width, height],
     });
-  }, [city, country]);
+
+    setCustomIcon(icon);
+  }, [html]);
 
   return (
-    <ComposableMap
-      projection={"geoAzimuthalEqualArea"}
-      projectionConfig={{ rotate: [-longitude, -latitude, 0], scale: 2000 }}
-      className="h-full w-full"
+    <MapContainer
+      center={[latitude, longitude]}
+      zoom={6}
+      minZoom={1}
+      maxZoom={9}
+      scrollWheelZoom={false}
+      className="h-full w-full aspect-video"
     >
-      <Geographies geography={"features.json"}>
-        {({ geographies }) =>
-          geographies.map((geo) => (
-            <Geography
-              key={geo.rsmKey}
-              geography={geo}
-              stroke="#686870"
-              fill="#1e1f24"
-              className="pointer-events-none"
-            />
-          ))
+      <ChangeView coords={[latitude, longitude]} />
+      <TileLayer
+        url={
+          darkMode
+            ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+            : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         }
-      </Geographies>
-      <Annotation
-        subject={[longitude, latitude]}
-        dx={-90}
-        dy={-30}
-        connectorProps={{
-          stroke: color,
-          strokeWidth: 3,
-          strokeLinecap: "round",
-        }}
-      >
-        <foreignObject
-          ref={ref}
-          width={size.width}
-          height={size.height}
-          rx="20"
-          ry="20"
-          className="pointer-events-none border rounded-xl p-4 bg-slate-300 dark:bg-slate-800 border-slate-800 dark:border-slate-300 whitespace-nowrap"
-          x={-(size.width + 10)}
-          y={-(size.height / 2)}
-        >
-          <div>
-            <p>
-              {city}, {country}
-            </p>
-            <p className="text-sm">
-              {numberFormat(temperature)}°C&nbsp;
-              {getWMOCode(weatherCode.toString(), isDay ? "day" : "night")}
-            </p>
-            <p className="text-sm">{numberFormat(humidity)}% humidity</p>
-          </div>
-        </foreignObject>
-      </Annotation>
-    </ComposableMap>
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      />
+      <TileLayer
+        attribution="Imagery courtesy NASA EOSDIS"
+        url={`https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_SNPP_CorrectedReflectance_TrueColor/default/${nasaDate}/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg`}
+        tileSize={256}
+        maxZoom={9}
+        maxNativeZoom={9}
+        opacity={0.6}
+        zIndex={1000}
+      />
+      {customIcon && (
+        <Marker position={[latitude, longitude]} icon={customIcon} />
+      )}
+    </MapContainer>
   );
 };
