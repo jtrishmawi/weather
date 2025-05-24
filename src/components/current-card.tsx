@@ -1,7 +1,7 @@
+import { Compass } from "@/components/compass";
 import { getCardinalDirection, timeAgo } from "@/lib/utils";
 import { getWMOCode, getWMOImageUrl } from "@/lib/wmo-codes";
 import { DropletsIcon } from "lucide-react";
-import { Compass } from "./compass";
 
 export const CurrentCard = ({
   weather,
