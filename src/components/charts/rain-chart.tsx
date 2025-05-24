@@ -200,7 +200,7 @@ export const RainChart = ({
       <Button
         onClick={zoomOut}
         type="button"
-        variant={"outline"}
+        variant={"outline-solid"}
         size="sm"
         className="absolute bottom-0 left-6"
       >

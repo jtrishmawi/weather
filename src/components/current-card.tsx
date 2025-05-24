@@ -49,7 +49,7 @@ export const CurrentCard = ({
           </small>
         </p>
         <div className="flex items-center justify-evenly gap-6 flex-wrap pb-4">
-          <div className="flex items-center justify-around flex-grow max-w-64">
+          <div className="flex items-center justify-around grow max-w-64">
             <img
               src={getWMOImageUrl(
                 weather.current.weatherCode.toString(),
@@ -66,7 +66,7 @@ export const CurrentCard = ({
               <span className="text-3xl">&deg;C</span>
             </div>
           </div>
-          <div className="flex items-center justify-around flex-grow max-w-64">
+          <div className="flex items-center justify-around grow max-w-64">
             <div className="p-[10px]">
               <Compass
                 direction={weather.current.windDirection10m}
@@ -78,7 +78,7 @@ export const CurrentCard = ({
               <span className="text-3xl">km/h</span>
             </div>
           </div>
-          <div className="flex items-center justify-around flex-grow max-w-64">
+          <div className="flex items-center justify-around grow max-w-64">
             <div className="p-[10px]">
               <DropletsIcon className="aspect-square w-auto h-[60px]" />
             </div>
