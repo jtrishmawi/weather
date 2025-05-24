@@ -1,7 +1,7 @@
 import { getCardinalDirection, timeAgo } from "@/lib/utils";
 import { getWMOCode, getWMOImageUrl } from "@/lib/wmo-codes";
-import { Compass } from "./compass";
 import { DropletsIcon } from "lucide-react";
+import { Compass } from "./compass";
 
 export const CurrentCard = ({
   weather,
@@ -42,7 +42,7 @@ export const CurrentCard = ({
             .
           </span>
           <small className="text-xs font-medium leading-none block sm:hidden pt-1">
-            <span className="sr-only">Updated: </span>
+            <span className="sr-only">Updated:</span>
             <time dateTime={weather.current?.time.toString()}>
               {timeAgo(weather.current?.time)}
             </time>
@@ -136,9 +136,8 @@ export const CurrentCard = ({
           </dd>
         </dl>
         <small className="text-xs font-medium leading-none ml-auto hidden sm:block">
-          <span className="sr-only">Updated: </span>
+          <span className="font-light">Last updated:</span>&nbsp;
           <time dateTime={weather.current?.time.toString()}>
-            <span className="font-light">Last updated:</span>&nbsp;
             {timeAgo(weather.current?.time)}
           </time>
         </small>
