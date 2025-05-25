@@ -20,7 +20,10 @@ export const App = () => {
       <div className="flex items-center py-4 gap-4">
         <h1 className="text-xl md:text-2xl lg:text-3xl font-bold tracking-tight">
           <span className="hidden sm:inline-block">Weather in</span>{" "}
-          {address.city} {address.locality}
+          {address.city}{" "}
+          {address.locality.toLowerCase() !== address.city.toLowerCase()
+            ? address.locality
+            : address.countryName}
         </h1>
         <Button
           onClick={() => actions.fetchWeather(geolocation)}
