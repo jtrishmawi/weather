@@ -1,4 +1,4 @@
-import { useTheme } from "@/hooks/useTheme";
+import { useTheme } from "@/hooks/use-theme";
 import { getWMOCode } from "@/lib/wmo-codes";
 import L from "leaflet";
 import { useEffect, useState } from "react";

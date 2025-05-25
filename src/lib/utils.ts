@@ -41,3 +41,6 @@ export const timeAgo = (date: Date) => {
     }
   }
 };
+
+export const getBackoffSeconds = (nextRetry: number | null) =>
+  nextRetry ? Math.max(0, Math.ceil((nextRetry - Date.now()) / 1000)) : null;
