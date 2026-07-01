@@ -8,6 +8,14 @@ export function cn(...inputs: ClassValue[]) {
 export const range = (start: number, stop: number, step: number) =>
   Array.from({ length: (stop - start) / step }, (_, i) => start + i * step);
 
+export const getUvSeverityLabel = (uv: number) => {
+  if (uv < 3) return "Low";
+  if (uv < 6) return "Moderate";
+  if (uv < 8) return "High";
+  if (uv < 11) return "Very High";
+  return "Extreme";
+};
+
 export const getCardinalDirection = (deg: number) => {
   const directions = [
     "North",

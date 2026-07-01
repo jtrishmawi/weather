@@ -61,7 +61,7 @@ export const reducer = (state: WeatherState, action: Actions): WeatherState => {
           history: [...state.history, `Address success @ ${timestamp}`],
         };
       case "FETCH_ADDRESS_ERROR": {
-        const addressRetries = state.retryWeather.retries + 1;
+        const addressRetries = state.retryAddress.retries + 1;
         return {
           ...state,
           loadingAddress: false,
@@ -70,6 +70,29 @@ export const reducer = (state: WeatherState, action: Actions): WeatherState => {
             retries: addressRetries,
             nextRetry:
               Date.now() + Math.min(300000, 2 ** addressRetries * 1000),
+          },
+        };
+      }
+      case "FETCH_AIR_QUALITY_START":
+        return { ...state, loadingAirQuality: true };
+      case "FETCH_AIR_QUALITY_SUCCESS":
+        return {
+          ...state,
+          loadingAirQuality: false,
+          airQuality: action.payload,
+          retryAirQuality: initialRetryMeta(),
+          history: [...state.history, `Air quality success @ ${timestamp}`],
+        };
+      case "FETCH_AIR_QUALITY_ERROR": {
+        const airQualityRetries = state.retryAirQuality.retries + 1;
+        return {
+          ...state,
+          loadingAirQuality: false,
+          errorAirQuality: action.payload,
+          retryAirQuality: {
+            retries: airQualityRetries,
+            nextRetry:
+              Date.now() + Math.min(300000, 2 ** airQualityRetries * 1000),
           },
         };
       }

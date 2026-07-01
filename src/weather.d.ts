@@ -32,6 +32,9 @@ type WeatherObject = {
     windSpeed10m: number;
     windDirection10m: number;
     windGusts10m: number;
+    uvIndex: number;
+    dewPoint2m: number;
+    visibility: number;
   };
   daily: {
     time: Date[];
@@ -39,14 +42,37 @@ type WeatherObject = {
     temperature2mMax: Float32Array<ArrayBufferLike>;
     temperature2mMin: Float32Array<ArrayBufferLike>;
     precipitationSum: Float32Array<ArrayBufferLike>;
+    sunrise: Date[];
+    sunset: Date[];
+    daylightDuration: Float32Array<ArrayBufferLike>;
+    uvIndexMax: Float32Array<ArrayBufferLike>;
+    precipitationProbabilityMax: Float32Array<ArrayBufferLike>;
+    windSpeed10mMax: Float32Array<ArrayBufferLike>;
+    windGusts10mMax: Float32Array<ArrayBufferLike>;
+    windDirection10mDominant: Float32Array<ArrayBufferLike>;
   };
   hourly: {
     time: Date[];
     temperature2m: Float32Array<ArrayBufferLike>;
     precipitation: Float32Array<ArrayBufferLike>;
+    relativeHumidity2m: Float32Array<ArrayBufferLike>;
+    windSpeed10m: Float32Array<ArrayBufferLike>;
+    precipitationProbability: Float32Array<ArrayBufferLike>;
+    uvIndex: Float32Array<ArrayBufferLike>;
   };
   latitude: number;
   longitude: number;
+};
+
+type AirQualityObject = {
+  current: {
+    time: Date;
+    usAqi: number;
+    europeanAqi: number;
+    pm2_5: number;
+    pm10: number;
+    ozone: number;
+  };
 };
 
 type GeocodingObject = {
@@ -112,15 +138,19 @@ type WeatherState = {
   geolocation?: GeolocationObject;
   weather?: WeatherObject;
   address?: GeocodingObject;
+  airQuality?: AirQualityObject;
   loadingGeolocation: boolean;
   loadingWeather: boolean;
   loadingAddress: boolean;
+  loadingAirQuality: boolean;
   errorGeolocation?: Error;
   errorWeather?: Error;
   errorAddress?: Error;
+  errorAirQuality?: Error;
   retryGeolocation: RetryMeta;
   retryWeather: RetryMeta;
   retryAddress: RetryMeta;
+  retryAirQuality: RetryMeta;
   history: string[];
   dispatchHistory: DispatchHistoryEntry[];
 };
@@ -135,12 +165,16 @@ type Payload = {
   FETCH_ADDRESS_START: undefined;
   FETCH_ADDRESS_SUCCESS: GeocodingObject;
   FETCH_ADDRESS_ERROR: Error;
+  FETCH_AIR_QUALITY_START: undefined;
+  FETCH_AIR_QUALITY_SUCCESS: AirQualityObject;
+  FETCH_AIR_QUALITY_ERROR: Error;
 };
 
 type DispatchedActions = {
   fetchGeolocation: () => Promise<GeolocationObject>;
   fetchWeather: (geoData: GeolocationObject) => Promise<WeatherObject>;
   fetchAddress: (weatherData: WeatherObject) => Promise<GeocodingObject>;
+  fetchAirQuality: (weatherData: WeatherObject) => Promise<AirQualityObject>;
   fetchAll: () => Promise<void>;
 };
 

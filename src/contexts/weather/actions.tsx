@@ -1,4 +1,5 @@
 import { queryClient } from "@/lib/query-client";
+import { fetchAirQuality } from "@/services/air-quality";
 import { fetchGeolocation } from "@/services/geolocation";
 import { fetchAddress } from "@/services/reverse-geocoding";
 import { fetchWeather } from "@/services/weather";
@@ -50,11 +51,31 @@ export const actions = (dispatch: Dispatch<Actions>): DispatchedActions => {
     }
   };
 
+  const fetchAirQualityAction = async (weatherData: WeatherObject) => {
+    try {
+      dispatch({ type: "FETCH_AIR_QUALITY_START" });
+      const data = await queryClient.fetchQuery({
+        queryKey: ["airQuality", weatherData],
+        queryFn: () => fetchAirQuality(weatherData),
+      });
+      dispatch({ type: "FETCH_AIR_QUALITY_SUCCESS", payload: data });
+      return data;
+    } catch (error) {
+      dispatch({ type: "FETCH_AIR_QUALITY_ERROR", payload: error as Error });
+      throw error;
+    }
+  };
+
   const fetchAll = async () => {
     try {
       const geo = await fetchGeolocationAction();
       const weather = await fetchWeatherAction(geo);
       await fetchAddressAction(weather);
+      // Air quality is supplementary; a failure here must never abort or
+      // block the primary geo/weather/address chain.
+      await fetchAirQualityAction(weather).catch((err) =>
+        console.error("Air quality fetch failed (non-blocking):", err)
+      );
     } catch (err) {
       console.error("fetchAll chain failed:", err);
     }
@@ -64,6 +85,7 @@ export const actions = (dispatch: Dispatch<Actions>): DispatchedActions => {
     fetchGeolocation: fetchGeolocationAction,
     fetchWeather: fetchWeatherAction,
     fetchAddress: fetchAddressAction,
+    fetchAirQuality: fetchAirQualityAction,
     fetchAll,
   };
 };

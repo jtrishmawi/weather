@@ -2,6 +2,10 @@ import { range } from "@/lib/utils";
 import { fetchWeatherApi } from "openmeteo";
 
 export const fetchWeather = async (params: GeolocationObject) => {
+  // Note: The order of weather variables in each array below must match the
+  // order the indices are read back out in `.variables(N)` / array position
+  // below. New fields must always be APPENDED, never inserted in the middle,
+  // or every later index silently shifts and reads the wrong variable.
   const weatherParams = {
     current: [
       "temperature_2m",
@@ -17,14 +21,32 @@ export const fetchWeather = async (params: GeolocationObject) => {
       "wind_speed_10m",
       "wind_direction_10m",
       "wind_gusts_10m",
+      "uv_index",
+      "dew_point_2m",
+      "visibility",
     ],
     daily: [
       "weather_code",
       "temperature_2m_max",
       "temperature_2m_min",
       "precipitation_sum",
+      "sunrise",
+      "sunset",
+      "daylight_duration",
+      "uv_index_max",
+      "precipitation_probability_max",
+      "wind_speed_10m_max",
+      "wind_gusts_10m_max",
+      "wind_direction_10m_dominant",
     ],
-    hourly: ["temperature_2m", "precipitation"],
+    hourly: [
+      "temperature_2m",
+      "precipitation",
+      "relative_humidity_2m",
+      "wind_speed_10m",
+      "precipitation_probability",
+      "uv_index",
+    ],
     timezone: "auto",
     ...params,
   };
@@ -62,6 +84,9 @@ export const fetchWeather = async (params: GeolocationObject) => {
       windSpeed10m: current.variables(10)!.value(),
       windDirection10m: current.variables(11)!.value(),
       windGusts10m: current.variables(12)!.value(),
+      uvIndex: current.variables(13)!.value(),
+      dewPoint2m: current.variables(14)!.value(),
+      visibility: current.variables(15)!.value(),
     },
     daily: {
       time: range(
@@ -74,6 +99,20 @@ export const fetchWeather = async (params: GeolocationObject) => {
       temperature2mMax: daily.variables(1)!.valuesArray()!,
       temperature2mMin: daily.variables(2)!.valuesArray()!,
       precipitationSum: daily.variables(3)!.valuesArray()!,
+      // sunrise/sunset are Unix-timestamp variables, not Float32 values, so
+      // they must be read via valuesInt64(i) rather than valuesArray().
+      sunrise: range(0, daily.variables(4)!.valuesInt64Length(), 1).map(
+        (i) => new Date(Number(daily.variables(4)!.valuesInt64(i)) * 1000)
+      ),
+      sunset: range(0, daily.variables(5)!.valuesInt64Length(), 1).map(
+        (i) => new Date(Number(daily.variables(5)!.valuesInt64(i)) * 1000)
+      ),
+      daylightDuration: daily.variables(6)!.valuesArray()!,
+      uvIndexMax: daily.variables(7)!.valuesArray()!,
+      precipitationProbabilityMax: daily.variables(8)!.valuesArray()!,
+      windSpeed10mMax: daily.variables(9)!.valuesArray()!,
+      windGusts10mMax: daily.variables(10)!.valuesArray()!,
+      windDirection10mDominant: daily.variables(11)!.valuesArray()!,
     },
     hourly: {
       time: range(
@@ -84,6 +123,10 @@ export const fetchWeather = async (params: GeolocationObject) => {
       // ).map((t) => new Date((t + utcOffsetSeconds) * 1000)),
       temperature2m: hourly.variables(0)!.valuesArray()!,
       precipitation: hourly.variables(1)!.valuesArray()!,
+      relativeHumidity2m: hourly.variables(2)!.valuesArray()!,
+      windSpeed10m: hourly.variables(3)!.valuesArray()!,
+      precipitationProbability: hourly.variables(4)!.valuesArray()!,
+      uvIndex: hourly.variables(5)!.valuesArray()!,
     },
     latitude,
     longitude,

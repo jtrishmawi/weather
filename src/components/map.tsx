@@ -1,4 +1,5 @@
 import { useTheme } from "@/hooks/use-theme";
+import { getAqiSeverity } from "@/lib/aqi";
 import { getWMOCode } from "@/lib/wmo-codes";
 import L from "leaflet";
 import { useEffect, useState } from "react";
@@ -13,6 +14,8 @@ type MapProps = {
   humidity: number;
   weatherCode: number;
   isDay: boolean;
+  windSpeed: number;
+  usAqi?: number;
 };
 
 function ChangeView({ coords }: { coords: [number, number] }) {
@@ -32,6 +35,8 @@ export const Map = ({
   humidity,
   weatherCode,
   isDay,
+  windSpeed,
+  usAqi,
 }: MapProps) => {
   const { theme } = useTheme();
   const darkMode = theme === "dark";
@@ -45,6 +50,14 @@ export const Map = ({
     maximumFractionDigits: 0,
   });
 
+  const aqiRow =
+    usAqi !== undefined
+      ? (() => {
+          const { label, colorClass } = getAqiSeverity(usAqi);
+          return `<p class="${colorClass}">AQI ${numberFormat(usAqi)} (${label})</p>`;
+        })()
+      : "";
+
   const html = `
       <div class="min-w-[160px] max-w-[240px] border rounded-xl p-4 bg-slate-300 dark:bg-slate-800 border-slate-800 dark:border-slate-300 rounded-br-none whitespace-nowrap text-xs opacity-65">
         <p>${city}, ${country}</p>
@@ -52,7 +65,8 @@ export const Map = ({
           ${numberFormat(temperature)}°C&nbsp;
           ${getWMOCode(weatherCode.toString(), isDay ? "day" : "night")}
         </p>
-        <p>${numberFormat(humidity)}% humidity</p>
+        <p>${numberFormat(humidity)}% humidity, ${numberFormat(windSpeed)}km/h wind</p>
+        ${aqiRow}
       </div>
     `;
 

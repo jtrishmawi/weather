@@ -1,5 +1,5 @@
 import { Compass } from "@/components/compass";
-import { getCardinalDirection, timeAgo } from "@/lib/utils";
+import { getCardinalDirection, getUvSeverityLabel, timeAgo } from "@/lib/utils";
 import { getWMOCode, getWMOImageUrl } from "@/lib/wmo-codes";
 import { DropletsIcon } from "lucide-react";
 
@@ -22,6 +22,9 @@ export const CurrentCard = ({
       cloudCover: number;
       showers: number;
       windGusts10m: number;
+      uvIndex: number;
+      dewPoint2m: number;
+      visibility: number;
     };
   };
 }) => {
@@ -133,6 +136,22 @@ export const CurrentCard = ({
           <dt className="@md/current:text-right">Snowfall</dt>
           <dd className="font-medium text-right @md/current:text-left">
             {weather.current.snowfall}cm
+          </dd>
+          <dt className="@md/current:text-right">UV index</dt>
+          <dd className="font-medium text-right @md/current:text-left">
+            {format(weather.current.uvIndex)}
+            <span className="ml-1 text-xs font-normal">
+              ({getUvSeverityLabel(weather.current.uvIndex)})
+            </span>
+          </dd>
+          <dt className="@md/current:text-right">Dew point</dt>
+          <dd className="font-medium text-right @md/current:text-left">
+            {format(weather.current.dewPoint2m)}
+            &deg;C
+          </dd>
+          <dt className="@md/current:text-right">Visibility</dt>
+          <dd className="font-medium text-right @md/current:text-left">
+            {format(weather.current.visibility / 1000)}km
           </dd>
         </dl>
         <small className="text-xs font-medium leading-none ml-auto hidden sm:block">

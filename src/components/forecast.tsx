@@ -1,5 +1,7 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { getCardinalDirection } from "@/lib/utils";
 import { getWMOCode, getWMOImageUrl } from "@/lib/wmo-codes";
+import { Sunrise, Sunset, Wind } from "lucide-react";
 
 type ForecastProps = {
   time: Date[];
@@ -7,6 +9,20 @@ type ForecastProps = {
   temperature2mMin: Float32Array;
   weatherCode: Float32Array;
   precipitationSum: Float32Array;
+  sunrise: Date[];
+  sunset: Date[];
+  daylightDuration: Float32Array;
+  precipitationProbabilityMax: Float32Array;
+  uvIndexMax: Float32Array;
+  windSpeed10mMax: Float32Array;
+  windGusts10mMax: Float32Array;
+  windDirection10mDominant: Float32Array;
+};
+
+const formatDaylight = (seconds: number) => {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.round((seconds % 3600) / 60);
+  return `${hours}h ${minutes}m`;
 };
 
 export const Forecast = (data: ForecastProps) => {
@@ -16,6 +32,14 @@ export const Forecast = (data: ForecastProps) => {
       temperature2mMin: data.temperature2mMin[index],
       weatherCode: data.weatherCode[index],
       precipitationSum: data.precipitationSum[index],
+      sunrise: data.sunrise[index],
+      sunset: data.sunset[index],
+      daylightDuration: data.daylightDuration[index],
+      precipitationProbabilityMax: data.precipitationProbabilityMax[index],
+      uvIndexMax: data.uvIndexMax[index],
+      windSpeed10mMax: data.windSpeed10mMax[index],
+      windGusts10mMax: data.windGusts10mMax[index],
+      windDirection10mDominant: data.windDirection10mDominant[index],
       time: time,
     };
   });
@@ -35,6 +59,11 @@ export const Forecast = (data: ForecastProps) => {
 
   const { format: decimalFormat } = new Intl.NumberFormat(undefined, {
     maximumFractionDigits: 2,
+  });
+
+  const { format: timeFormat } = new Intl.DateTimeFormat(undefined, {
+    hour: "2-digit",
+    minute: "2-digit",
   });
 
   return (
@@ -68,6 +97,32 @@ export const Forecast = (data: ForecastProps) => {
               </div>
               <div className="whitespace-normal break-words">
                 {decimalFormat(cast.precipitationSum)}mm
+              </div>
+              <div className="flex flex-col items-start text-xs gap-1">
+                <span className="flex items-center gap-1">
+                  <Sunrise aria-hidden="true" className="size-3.5" />
+                  {timeFormat(cast.sunrise)}
+                </span>
+                <span className="flex items-center gap-1">
+                  <Sunset aria-hidden="true" className="size-3.5" />
+                  {timeFormat(cast.sunset)}
+                </span>
+                <span>{formatDaylight(cast.daylightDuration)} daylight</span>
+              </div>
+              <div className="whitespace-normal break-words">
+                {numberFormat(cast.precipitationProbabilityMax)}%
+                <span className="sr-only"> chance of precipitation</span>
+              </div>
+              <div className="whitespace-normal break-words">
+                UV {numberFormat(cast.uvIndexMax)}
+              </div>
+              <div className="flex flex-col items-start text-xs gap-1">
+                <span className="flex items-center gap-1">
+                  <Wind aria-hidden="true" className="size-3.5" />
+                  {numberFormat(cast.windSpeed10mMax)}&nbsp;km/h&nbsp;
+                  {getCardinalDirection(cast.windDirection10mDominant)}
+                </span>
+                <span>Gusts {numberFormat(cast.windGusts10mMax)}km/h</span>
               </div>
             </div>
           );

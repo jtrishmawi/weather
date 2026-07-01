@@ -1,3 +1,4 @@
+import { AirQualityCard } from "@/components/air-quality-card";
 import { CurrentCard } from "@/components/current-card";
 import { Forecast } from "@/components/forecast";
 import { Map } from "@/components/map";
@@ -9,7 +10,7 @@ import { useWeather } from "./hooks/use-weather";
 
 export const App = () => {
   const { state, actions } = useWeather();
-  const { geolocation, weather, address } = state;
+  const { geolocation, weather, address, airQuality } = state;
 
   const isLoaded = !!geolocation && !!weather && !!address;
 
@@ -51,11 +52,18 @@ export const App = () => {
             humidity={weather.current.relativeHumidity2m}
             weatherCode={weather.current.weatherCode}
             isDay={weather.current.isDay}
+            windSpeed={weather.current.windSpeed10m}
+            usAqi={airQuality?.current.usAqi}
           />
         </div>
         <div className="lg:basis-1/2 order-4">
           <Forecast {...weather.daily} />
         </div>
+        {airQuality && (
+          <div className="lg:basis-1/2 order-5">
+            <AirQualityCard airQuality={airQuality} />
+          </div>
+        )}
       </div>
     </div>
   );

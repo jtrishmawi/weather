@@ -47,6 +47,13 @@ export const WeatherProvider: React.FC<{ children: React.ReactNode }> = ({
       ) {
         dispatchedActions.fetchAddress(state.weather);
       }
+      if (
+        state.retryAirQuality.nextRetry &&
+        now >= state.retryAirQuality.nextRetry &&
+        state.weather
+      ) {
+        dispatchedActions.fetchAirQuality(state.weather);
+      }
     }, 1000);
 
     return () => clearInterval(interval);
@@ -54,6 +61,7 @@ export const WeatherProvider: React.FC<{ children: React.ReactNode }> = ({
     state.retryGeolocation.nextRetry,
     state.retryWeather.nextRetry,
     state.retryAddress.nextRetry,
+    state.retryAirQuality.nextRetry,
   ]);
 
   return (
