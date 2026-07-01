@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "knip": "knip"
   },
   "dependencies": {
     "@gatsbylabs/vite-plugin-unused": "^1.0.2",
@@ -47,6 +48,7 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.3",
     "globals": "^17.7.0",
+    "knip": "^6.23.0",
     "postcss": "^8.5.16",
     "rollup-plugin-visualizer": "^7.0.1",
     "tailwindcss": "^4.3.2",
