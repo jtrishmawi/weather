@@ -34,12 +34,6 @@ export const OverviewChart = (data: OverviewChartProps) => {
       [];
     const uvCharts: { uv: number; time: number }[] = [];
     data.time.forEach((t, index) => {
-      const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000);
-      const aDayLater = new Date(Date.now() + 22 * 60 * 60 * 1000);
-
-      if (t < twoHoursAgo || t > aDayLater)
-        return;
-
       const time = t.getTime();
 
       tempCharts.push({
@@ -91,23 +85,25 @@ export const OverviewChart = (data: OverviewChartProps) => {
   ]);
 
   return (
-    <div className="@container/current h-full">
+    <div className="@container/current bg-card text-card-foreground border border-border rounded-xl h-full">
       <Tabs
         defaultValue="temperature"
-        className="flex flex-col gap-4 h-full @lg/current:px-6 @sm/current:px-4"
+        className="flex flex-col gap-4 h-full @lg/current:px-6 @sm/current:px-4 p-4"
       >
-        <div className="flex justify-between items-center gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
           <h2 className="scroll-m-20 pb-2 text-2xl sm:text-3xl font-semibold tracking-tight first:mt-0">
             Overview
           </h2>
-          <TabsList>
-            <TabsTrigger value="temperature">Temperature</TabsTrigger>
-            <TabsTrigger value="rain">Rain</TabsTrigger>
-            <TabsTrigger value="humidity">Humidity</TabsTrigger>
-            <TabsTrigger value="wind">Wind</TabsTrigger>
-            <TabsTrigger value="precipProbability">Precip %</TabsTrigger>
-            <TabsTrigger value="uv">UV</TabsTrigger>
-          </TabsList>
+          <div className="overflow-x-auto">
+            <TabsList className="w-max">
+              <TabsTrigger value="temperature">Temperature</TabsTrigger>
+              <TabsTrigger value="rain">Rain</TabsTrigger>
+              <TabsTrigger value="humidity">Humidity</TabsTrigger>
+              <TabsTrigger value="wind">Wind</TabsTrigger>
+              <TabsTrigger value="precipProbability">Precip %</TabsTrigger>
+              <TabsTrigger value="uv">UV</TabsTrigger>
+            </TabsList>
+          </div>
         </div>
         <TabsContent value="temperature" className="flex-1">
           <TempChart tempCharts={tempCharts} />

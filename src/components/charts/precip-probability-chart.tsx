@@ -10,6 +10,7 @@ export const PrecipProbabilityChart = ({
     data={precipProbabilityCharts}
     dataKey="precipProbability"
     unit="%"
-    color="#58c2d8"
+    color="var(--chart-2)"
+    label="Precipitation probability"
   />
 );

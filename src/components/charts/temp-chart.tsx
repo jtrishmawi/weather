@@ -10,6 +10,7 @@ export const TempChart = ({
     data={tempCharts}
     dataKey="temperature"
     unit="°C"
-    color="#58c2d8"
+    color="var(--chart-1)"
+    label="Temperature"
   />
 );

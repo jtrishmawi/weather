@@ -5,5 +5,12 @@ export const UvChart = ({
 }: {
   uvCharts: { uv: number; time: number }[];
 }) => (
-  <ZoomableChart kind="line" data={uvCharts} dataKey="uv" unit="" color="#58c2d8" />
+  <ZoomableChart
+    kind="line"
+    data={uvCharts}
+    dataKey="uv"
+    unit=""
+    color="var(--chart-3)"
+    label="UV index"
+  />
 );

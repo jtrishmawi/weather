@@ -10,6 +10,7 @@ export const HumidityChart = ({
     data={humidityCharts}
     dataKey="humidity"
     unit="%"
-    color="#58c2d8"
+    color="var(--chart-4)"
+    label="Humidity"
   />
 );

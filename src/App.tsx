@@ -1,4 +1,3 @@
-import { AirQualityCard } from "@/components/air-quality-card";
 import { CurrentCard } from "@/components/current-card";
 import { Forecast } from "@/components/forecast";
 import { Map } from "@/components/map";
@@ -12,7 +11,7 @@ export const App = () => {
   const { state, actions } = useWeather();
   const { geolocation, weather, address, airQuality } = state;
 
-  const isLoaded = !!geolocation && !!weather && !!address;
+  const isLoaded = !!geolocation && !!weather && !!address && !!airQuality;
 
   if (!isLoaded) return <WeatherProgress />;
 
@@ -35,14 +34,18 @@ export const App = () => {
         </Button>
         <ModeToggle />
       </div>
-      <div className="flex flex-col lg:flex-row lg:flex-wrap gap-y-4">
-        <div className="lg:basis-1/2 xl:basis-2/3 order-1">
-          <CurrentCard weather={weather} />
+      {/*
+        Pairing: Current + Map together (both "at a glance" current-state
+        cards), Overview + Forecast together (both detailed/browsable). On
+        mobile the charts come before the map (order-2 vs order-3); desktop
+        pairs Current with Map in row one and Overview with Forecast in row
+        two via lg:order.
+      */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="order-1 lg:order-1">
+          <CurrentCard weather={weather} airQuality={airQuality} />
         </div>
-        <div className="lg:basis-1/2 order-2 lg:order-3">
-          <OverviewChart {...weather.hourly} />
-        </div>
-        <div className="lg:basis-1/2 xl:basis-1/3 order-3 lg:order-2">
+        <div className="order-3 lg:order-2 h-full">
           <Map
             latitude={weather.latitude}
             longitude={weather.longitude}
@@ -56,14 +59,12 @@ export const App = () => {
             usAqi={airQuality?.current.usAqi}
           />
         </div>
-        <div className="lg:basis-1/2 order-4">
+        <div className="order-2 lg:order-3">
+          <OverviewChart {...weather.hourly} />
+        </div>
+        <div className="order-4 lg:order-4 h-full">
           <Forecast {...weather.daily} />
         </div>
-        {airQuality && (
-          <div className="lg:basis-1/2 order-5">
-            <AirQualityCard airQuality={airQuality} />
-          </div>
-        )}
       </div>
     </div>
   );

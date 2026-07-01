@@ -1,9 +1,17 @@
 import { useTheme } from "@/hooks/use-theme";
 import { getAqiSeverity } from "@/lib/aqi";
-import { getWMOCode } from "@/lib/wmo-codes";
+import { getWMOCode, getWMOImageUrl } from "@/lib/wmo-codes";
+import { fetchRadarLayers } from "@/services/rainviewer";
 import L from "leaflet";
+import { LocateFixed } from "lucide-react";
 import { useEffect, useState } from "react";
-import { MapContainer, Marker, TileLayer, useMap } from "react-leaflet";
+import {
+  LayersControl,
+  MapContainer,
+  Marker,
+  TileLayer,
+  useMap,
+} from "react-leaflet";
 
 type MapProps = {
   latitude: number;
@@ -26,6 +34,24 @@ function ChangeView({ coords }: { coords: [number, number] }) {
   return null;
 }
 
+function RecenterControl({ coords }: { coords: [number, number] }) {
+  const map = useMap();
+  return (
+    <div className="leaflet-top leaflet-right">
+      <div className="leaflet-control leaflet-bar">
+        <button
+          type="button"
+          aria-label="Recenter map on current location"
+          onClick={() => map.setView(coords, 6)}
+          className="flex! h-8.5! w-8.5! items-center justify-center bg-card! text-card-foreground! hover:bg-muted!"
+        >
+          <LocateFixed className="size-4" aria-hidden="true" />
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export const Map = ({
   latitude,
   longitude,
@@ -41,6 +67,15 @@ export const Map = ({
   const { theme } = useTheme();
   const darkMode = theme === "dark";
   const [customIcon, setCustomIcon] = useState<L.DivIcon | null>(null);
+  const [radarUrl, setRadarUrl] = useState<string | null>(null);
+  const [satelliteUrl, setSatelliteUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchRadarLayers().then(({ radarUrl, satelliteUrl }) => {
+      setRadarUrl(radarUrl);
+      setSatelliteUrl(satelliteUrl);
+    });
+  }, []);
 
   const yesterday = new Date();
   yesterday.setDate(yesterday.getDate() - 1);
@@ -50,23 +85,41 @@ export const Map = ({
     maximumFractionDigits: 0,
   });
 
-  const aqiRow =
+  const aqiBadge =
     usAqi !== undefined
       ? (() => {
-          const { label, colorClass } = getAqiSeverity(usAqi);
-          return `<p class="${colorClass}">AQI ${numberFormat(usAqi)} (${label})</p>`;
+          const { label, colorClass, bgClass } = getAqiSeverity(usAqi);
+          return `
+            <span class="inline-block mt-1 px-2 py-0.5 rounded-full text-[10px] font-medium font-mono ${colorClass} ${bgClass}">
+              AQI ${numberFormat(usAqi)} &middot; ${label}
+            </span>
+          `;
         })()
       : "";
 
   const html = `
-      <div class="min-w-[160px] max-w-[240px] border rounded-xl p-4 bg-slate-300 dark:bg-slate-800 border-slate-800 dark:border-slate-300 rounded-br-none whitespace-nowrap text-xs opacity-65">
-        <p>${city}, ${country}</p>
-        <p>
-          ${numberFormat(temperature)}°C&nbsp;
-          ${getWMOCode(weatherCode.toString(), isDay ? "day" : "night")}
-        </p>
-        <p>${numberFormat(humidity)}% humidity, ${numberFormat(windSpeed)}km/h wind</p>
-        ${aqiRow}
+      <div class="min-w-47.5 max-w-65 border rounded-xl rounded-br-none p-3 bg-card text-card-foreground border-border shadow-lg text-xs">
+        <div class="flex items-center gap-2">
+          <img
+            src="${getWMOImageUrl(weatherCode.toString(), isDay ? "day" : "night")}"
+            alt=""
+            class="size-9 shrink-0 invert dark:invert-0"
+          />
+          <div class="min-w-0">
+            <p class="font-semibold text-sm leading-tight truncate">${city}, ${country}</p>
+            <p class="font-mono text-base leading-tight">
+              ${numberFormat(temperature)}&deg;C
+              <span class="font-sans font-normal text-[11px] text-muted-foreground capitalize">
+                ${getWMOCode(weatherCode.toString(), isDay ? "day" : "night")}
+              </span>
+            </p>
+          </div>
+        </div>
+        <div class="flex items-center justify-between gap-3 font-mono text-[11px] text-muted-foreground mt-2 pt-2 border-t border-border">
+          <span>${numberFormat(humidity)}% humidity</span>
+          <span>${numberFormat(windSpeed)}km/h wind</span>
+        </div>
+        ${aqiBadge}
       </div>
     `;
 
@@ -100,9 +153,10 @@ export const Map = ({
       minZoom={1}
       maxZoom={9}
       scrollWheelZoom={false}
-      className="h-full w-full aspect-video"
+      className="h-full w-full aspect-video rounded-xl border border-border overflow-hidden"
     >
       <ChangeView coords={[latitude, longitude]} />
+      <RecenterControl coords={[latitude, longitude]} />
       <TileLayer
         url={
           darkMode
@@ -111,15 +165,45 @@ export const Map = ({
         }
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       />
-      <TileLayer
-        attribution="Imagery courtesy NASA EOSDIS"
-        url={`https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_SNPP_CorrectedReflectance_TrueColor/default/${nasaDate}/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg`}
-        tileSize={256}
-        maxZoom={9}
-        maxNativeZoom={9}
-        opacity={0.6}
-        zIndex={1000}
-      />
+      <LayersControl position="bottomleft">
+        {radarUrl && (
+          <LayersControl.Overlay checked name="Rain radar">
+            <TileLayer
+              attribution="Weather radar &copy; RainViewer"
+              url={radarUrl}
+              tileSize={256}
+              maxZoom={9}
+              maxNativeZoom={6}
+              opacity={0.55}
+              zIndex={1000}
+            />
+          </LayersControl.Overlay>
+        )}
+        {satelliteUrl && (
+          <LayersControl.Overlay name="Cloud satellite (IR)">
+            <TileLayer
+              attribution="Satellite imagery &copy; RainViewer"
+              url={satelliteUrl}
+              tileSize={256}
+              maxZoom={9}
+              maxNativeZoom={6}
+              opacity={0.7}
+              zIndex={999}
+            />
+          </LayersControl.Overlay>
+        )}
+        <LayersControl.Overlay name="Satellite (true color)">
+          <TileLayer
+            attribution="Imagery courtesy NASA EOSDIS"
+            url={`https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_SNPP_CorrectedReflectance_TrueColor/default/${nasaDate}/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg`}
+            tileSize={256}
+            maxZoom={9}
+            maxNativeZoom={9}
+            opacity={0.7}
+            zIndex={998}
+          />
+        </LayersControl.Overlay>
+      </LayersControl>
       {customIcon && (
         <Marker position={[latitude, longitude]} icon={customIcon} />
       )}

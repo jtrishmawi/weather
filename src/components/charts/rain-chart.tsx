@@ -10,6 +10,7 @@ export const RainChart = ({
     data={rainCharts}
     dataKey="rain"
     unit="mm"
-    color="#58c2d8"
+    color="var(--chart-2)"
+    label="Rain"
   />
 );

@@ -45,12 +45,9 @@ export const Forecast = (data: ForecastProps) => {
   });
 
   const { format: dateFormat } = new Intl.DateTimeFormat(undefined, {
-    // year: "2-digit",
     month: "short",
     weekday: "short",
     day: "2-digit",
-    // hour: "2-digit",
-    // minute: "2-digit",
   });
 
   const { format: numberFormat } = new Intl.NumberFormat(undefined, {
@@ -67,38 +64,45 @@ export const Forecast = (data: ForecastProps) => {
   });
 
   return (
-    <div className="@container/current flex flex-col">
-      <div className="flex items-center @lg/current:px-6 @sm/current:px-4">
+    <div className="@container/current bg-card text-card-foreground border border-border rounded-xl flex flex-col h-full lg:px-6 p-4">
+      <div className="flex items-center">
         <h2 className="scroll-m-20 pb-2 text-2xl sm:text-3xl font-semibold tracking-tight first:mt-0">
           Forecast
         </h2>
       </div>
-      <ScrollArea className="h-96">
+      <ScrollArea className="flex-1 min-h-0 max-h-96">
         {casts.map((cast, index) => {
           return (
             <div
               key={index}
-              className="flex justify-around items-center border rounded-sm mb-2 px-4 gap-2 text-sm"
+              className="border rounded-lg mb-2 p-3 flex flex-col gap-2 text-sm"
             >
-              <div className="capitalize">{dateFormat(cast.time)}</div>
-              <img
-                src={getWMOImageUrl(cast.weatherCode.toString())}
-                alt={getWMOCode(cast.weatherCode.toString())}
-                className="invert dark:invert-0 h-[70px] aspect-square object-none"
-              />
-              <div className="flex flex-col items-end">
-                <div className="text-lg">
-                  {numberFormat(cast.temperature2mMax)}°C
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2 min-w-0">
+                  <img
+                    src={getWMOImageUrl(cast.weatherCode.toString())}
+                    alt={getWMOCode(cast.weatherCode.toString())}
+                    className="invert dark:invert-0 size-10 shrink-0 object-none"
+                  />
+                  <div className="min-w-0">
+                    <div className="font-medium capitalize truncate">
+                      {dateFormat(cast.time)}
+                    </div>
+                    <div className="text-muted-foreground capitalize truncate">
+                      {getWMOCode(cast.weatherCode.toString())}
+                    </div>
+                  </div>
                 </div>
-                <div>{numberFormat(cast.temperature2mMin)}°C</div>
+                <div className="text-right font-mono shrink-0">
+                  <span className="text-lg font-semibold">
+                    {numberFormat(cast.temperature2mMax)}&deg;C
+                  </span>
+                  <span className="text-muted-foreground">
+                    &nbsp;/&nbsp;{numberFormat(cast.temperature2mMin)}&deg;C
+                  </span>
+                </div>
               </div>
-              <div className="capitalize font-medium">
-                {getWMOCode(cast.weatherCode.toString())}
-              </div>
-              <div className="whitespace-normal break-words">
-                {decimalFormat(cast.precipitationSum)}mm
-              </div>
-              <div className="flex flex-col items-start text-xs gap-1">
+              <div className="flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-muted-foreground font-mono">
                 <span className="flex items-center gap-1">
                   <Sunrise aria-hidden="true" className="size-3.5" />
                   {timeFormat(cast.sunrise)}
@@ -108,18 +112,15 @@ export const Forecast = (data: ForecastProps) => {
                   {timeFormat(cast.sunset)}
                 </span>
                 <span>{formatDaylight(cast.daylightDuration)} daylight</span>
-              </div>
-              <div className="whitespace-normal break-words">
-                {numberFormat(cast.precipitationProbabilityMax)}%
-                <span className="sr-only"> chance of precipitation</span>
-              </div>
-              <div className="whitespace-normal break-words">
-                UV {numberFormat(cast.uvIndexMax)}
-              </div>
-              <div className="flex flex-col items-start text-xs gap-1">
+                <span>{decimalFormat(cast.precipitationSum)}mm rain</span>
+                <span>
+                  {numberFormat(cast.precipitationProbabilityMax)}% chance
+                  <span className="sr-only"> of precipitation</span>
+                </span>
+                <span>UV {numberFormat(cast.uvIndexMax)}</span>
                 <span className="flex items-center gap-1">
                   <Wind aria-hidden="true" className="size-3.5" />
-                  {numberFormat(cast.windSpeed10mMax)}&nbsp;km/h&nbsp;
+                  {numberFormat(cast.windSpeed10mMax)}km/h&nbsp;
                   {getCardinalDirection(cast.windDirection10mDominant)}
                 </span>
                 <span>Gusts {numberFormat(cast.windGusts10mMax)}km/h</span>

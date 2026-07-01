@@ -48,6 +48,7 @@ export const fetchWeather = async (params: GeolocationObject) => {
       "uv_index",
     ],
     timezone: "auto",
+    forecast_days: 16,
     ...params,
   };
   const url = "https://api.open-meteo.com/v1/forecast";

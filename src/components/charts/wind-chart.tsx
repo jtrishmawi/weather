@@ -10,6 +10,7 @@ export const WindChart = ({
     data={windCharts}
     dataKey="wind"
     unit="km/h"
-    color="#58c2d8"
+    color="var(--chart-5)"
+    label="Wind speed"
   />
 );
