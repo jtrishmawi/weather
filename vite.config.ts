@@ -17,9 +17,15 @@ export default defineConfig({
     rollupOptions: {
       plugins: isVercel ? [] : [visualizer({ open: true })],
       output: {
-        manualChunks: {
-          leaflet: ["leaflet", "react-leaflet"],
-          recharts: ["recharts"],
+        // Vite 8 bundles with rolldown, which replaces manualChunks with
+        // advancedChunks. (recharts was dropped for highcharts a while ago.)
+        advancedChunks: {
+          groups: [
+            {
+              name: "leaflet",
+              test: /node_modules[\\/](leaflet|react-leaflet)[\\/]/,
+            },
+          ],
         },
       },
     },

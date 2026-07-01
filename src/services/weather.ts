@@ -1,77 +1,65 @@
 import { range } from "@/lib/utils";
 import { fetchWeatherApi } from "openmeteo";
 
-export const fetchWeather = async (params: GeolocationObject) => {
-  // Note: The order of weather variables in each array below must match the
-  // order the indices are read back out in `.variables(N)` / array position
-  // below. New fields must always be APPENDED, never inserted in the middle,
-  // or every later index silently shifts and reads the wrong variable.
-  const weatherParams = {
-    current: [
-      "temperature_2m",
-      "relative_humidity_2m",
-      "apparent_temperature",
-      "is_day",
-      "precipitation",
-      "rain",
-      "showers",
-      "snowfall",
-      "weather_code",
-      "cloud_cover",
-      "wind_speed_10m",
-      "wind_direction_10m",
-      "wind_gusts_10m",
-      "uv_index",
-      "dew_point_2m",
-      "visibility",
-    ],
-    daily: [
-      "weather_code",
-      "temperature_2m_max",
-      "temperature_2m_min",
-      "precipitation_sum",
-      "sunrise",
-      "sunset",
-      "daylight_duration",
-      "uv_index_max",
-      "precipitation_probability_max",
-      "wind_speed_10m_max",
-      "wind_gusts_10m_max",
-      "wind_direction_10m_dominant",
-    ],
-    hourly: [
-      "temperature_2m",
-      "precipitation",
-      "relative_humidity_2m",
-      "wind_speed_10m",
-      "precipitation_probability",
-      "uv_index",
-    ],
-    timezone: "auto",
-    forecast_days: 16,
-    ...params,
-  };
-  const url = "https://api.open-meteo.com/v1/forecast";
-  const responses = await fetchWeatherApi(url, weatherParams, 1);
+type WeatherApiResponse = Awaited<ReturnType<typeof fetchWeatherApi>>[number];
 
-  // Process first location. Add a for-loop for multiple locations or weather models
-  const response = responses[0];
+// Note: The order of weather variables in each array below must match the
+// order the indices are read back out in `.variables(N)` / array position
+// below. New fields must always be APPENDED, never inserted in the middle,
+// or every later index silently shifts and reads the wrong variable.
+const weatherVariables = {
+  current: [
+    "temperature_2m",
+    "relative_humidity_2m",
+    "apparent_temperature",
+    "is_day",
+    "precipitation",
+    "rain",
+    "showers",
+    "snowfall",
+    "weather_code",
+    "cloud_cover",
+    "wind_speed_10m",
+    "wind_direction_10m",
+    "wind_gusts_10m",
+    "uv_index",
+    "dew_point_2m",
+    "visibility",
+  ],
+  daily: [
+    "weather_code",
+    "temperature_2m_max",
+    "temperature_2m_min",
+    "precipitation_sum",
+    "sunrise",
+    "sunset",
+    "daylight_duration",
+    "uv_index_max",
+    "precipitation_probability_max",
+    "wind_speed_10m_max",
+    "wind_gusts_10m_max",
+    "wind_direction_10m_dominant",
+  ],
+  hourly: [
+    "temperature_2m",
+    "precipitation",
+    "relative_humidity_2m",
+    "wind_speed_10m",
+    "precipitation_probability",
+    "uv_index",
+  ],
+};
 
-  // Attributes for timezone and location
-  // const utcOffsetSeconds = response.utcOffsetSeconds(); - this is not eeded for France
-  // const timezone = response.timezone();
-  // const timezoneAbbreviation = response.timezoneAbbreviation();
+const parseWeatherResponse = (response: WeatherApiResponse): WeatherObject => {
   const latitude = response.latitude();
   const longitude = response.longitude();
   const current = response.current()!;
   const hourly = response.hourly()!;
   const daily = response.daily()!;
 
-  // Note: The order of weather variables in the URL query and the indices below need to match!
-  const weatherData = {
+  return {
     current: {
       time: new Date(Number(current.time()) * 1000),
-      // time: new Date((Number(current.time()) + utcOffsetSeconds) * 1000),
       temperature2m: current.variables(0)!.value(),
       relativeHumidity2m: current.variables(1)!.value(),
       apparentTemperature: current.variables(2)!.value(),
@@ -95,7 +83,6 @@ export const fetchWeather = async (params: GeolocationObject) => {
         Number(daily.timeEnd()),
         daily.interval()
       ).map((t) => new Date(t * 1000)),
-      // ).map((t) => new Date((t + utcOffsetSeconds) * 1000)),
       weatherCode: daily.variables(0)!.valuesArray()!,
       temperature2mMax: daily.variables(1)!.valuesArray()!,
       temperature2mMin: daily.variables(2)!.valuesArray()!,
@@ -121,7 +108,6 @@ export const fetchWeather = async (params: GeolocationObject) => {
         Number(hourly.timeEnd()),
         hourly.interval()
       ).map((t) => new Date(t * 1000)),
-      // ).map((t) => new Date((t + utcOffsetSeconds) * 1000)),
       temperature2m: hourly.variables(0)!.valuesArray()!,
       precipitation: hourly.variables(1)!.valuesArray()!,
       relativeHumidity2m: hourly.variables(2)!.valuesArray()!,
@@ -132,6 +118,33 @@ export const fetchWeather = async (params: GeolocationObject) => {
     latitude,
     longitude,
   };
+};
 
-  return weatherData;
+// Open-Meteo accepts coordinate arrays, so every location is fetched in a
+// single request and the responses come back in the same order.
+export const fetchWeatherForLocations = async (
+  locations: WeatherLocation[]
+): Promise<Record<string, WeatherObject>> => {
+  const weatherParams = {
+    ...weatherVariables,
+    timezone: "auto",
+    forecast_days: 16,
+    latitude: locations.map((l) => l.latitude),
+    longitude: locations.map((l) => l.longitude),
+  };
+  const url = "https://api.open-meteo.com/v1/forecast";
+  const responses = await fetchWeatherApi(url, weatherParams, 1);
+
+  if (responses.length !== locations.length) {
+    throw new Error(
+      `Weather API returned ${responses.length} locations, expected ${locations.length}`
+    );
+  }
+
+  return Object.fromEntries(
+    locations.map((location, i) => [
+      location.id,
+      parseWeatherResponse(responses[i]),
+    ])
+  );
 };

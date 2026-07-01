@@ -5,7 +5,9 @@ const globals = require("globals");
 const { fixupConfigRules } = require("@eslint/compat");
 
 const tsParser = require("@typescript-eslint/parser");
-const reactRefresh = require("eslint-plugin-react-refresh");
+// The plugin ships ESM with a default export; plain require() returns the
+// interop wrapper whose rules live under .default.
+const reactRefresh = require("eslint-plugin-react-refresh").default;
 const js = require("@eslint/js");
 
 const { FlatCompat } = require("@eslint/eslintrc");

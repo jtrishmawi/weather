@@ -1,19 +1,23 @@
-type ActionMap<M extends { [index: string]: unknown }> = {
-  [Key in keyof M]: M[Key] extends undefined
-    ? {
-        type: Key;
-      }
-    : {
-        type: Key;
-        payload: M[Key];
-      };
-};
-
 type Theme = "dark" | "light" | "system";
 
 type GeolocationObject = {
-  latitude: number | null;
-  longitude: number | null;
+  latitude: number;
+  longitude: number;
+};
+
+type City = {
+  id: string;
+  name: string;
+  admin1?: string;
+  country?: string;
+  latitude: number;
+  longitude: number;
+};
+
+type WeatherLocation = {
+  id: string;
+  latitude: number;
+  longitude: number;
 };
 
 type WeatherObject = {
@@ -123,59 +127,3 @@ type GeocodingObject = {
   };
 };
 
-type RetryMeta = {
-  retries: number;
-  nextRetry: number | null;
-};
-
-type DispatchHistoryEntry = {
-  action: string;
-  timestamp: string;
-  payload?: unknown;
-};
-
-type WeatherState = {
-  geolocation?: GeolocationObject;
-  weather?: WeatherObject;
-  address?: GeocodingObject;
-  airQuality?: AirQualityObject;
-  loadingGeolocation: boolean;
-  loadingWeather: boolean;
-  loadingAddress: boolean;
-  loadingAirQuality: boolean;
-  errorGeolocation?: Error;
-  errorWeather?: Error;
-  errorAddress?: Error;
-  errorAirQuality?: Error;
-  retryGeolocation: RetryMeta;
-  retryWeather: RetryMeta;
-  retryAddress: RetryMeta;
-  retryAirQuality: RetryMeta;
-  history: string[];
-  dispatchHistory: DispatchHistoryEntry[];
-};
-
-type Payload = {
-  FETCH_GEO_START: undefined;
-  FETCH_GEO_SUCCESS: GeolocationObject;
-  FETCH_GEO_ERROR: Error;
-  FETCH_WEATHER_START: undefined;
-  FETCH_WEATHER_SUCCESS: WeatherObject;
-  FETCH_WEATHER_ERROR: Error;
-  FETCH_ADDRESS_START: undefined;
-  FETCH_ADDRESS_SUCCESS: GeocodingObject;
-  FETCH_ADDRESS_ERROR: Error;
-  FETCH_AIR_QUALITY_START: undefined;
-  FETCH_AIR_QUALITY_SUCCESS: AirQualityObject;
-  FETCH_AIR_QUALITY_ERROR: Error;
-};
-
-type DispatchedActions = {
-  fetchGeolocation: () => Promise<GeolocationObject>;
-  fetchWeather: (geoData: GeolocationObject) => Promise<WeatherObject>;
-  fetchAddress: (weatherData: WeatherObject) => Promise<GeocodingObject>;
-  fetchAirQuality: (weatherData: WeatherObject) => Promise<AirQualityObject>;
-  fetchAll: () => Promise<void>;
-};
-
-type Actions = ActionMap<Payload>[keyof ActionMap<Payload>];

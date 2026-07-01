@@ -2,7 +2,7 @@ import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import Highcharts from "highcharts/esm/highstock.js";
 import "highcharts/esm/modules/accessibility.js";
 import { HighchartsReact } from "highcharts-react-official";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 type ZoomableChartProps<T extends Record<string, number> & { time: number }> =
   {
@@ -43,6 +43,9 @@ export const ZoomableChart = <
 }: ZoomableChartProps<T>) => {
   const prefersReducedMotion = useReducedMotion();
   const summary = summarize(data, dataKey);
+  // "Now" is frozen at mount so re-renders don't shift the zoom window or the
+  // plot line (render purity).
+  const [mountedAt] = useState(() => Date.now());
 
   const options = useMemo<Highcharts.Options>(() => {
     const seriesData: [number, number][] = data.map((d) => [
@@ -104,17 +107,17 @@ export const ZoomableChart = <
         tickColor: "var(--border)",
         labels: { style: { color: "var(--muted-foreground)" } },
         dateTimeLabelFormats: {
-          hour: "%l%p",
-          day: "%b %e",
+          hour: { main: "%l%p" },
+          day: { main: "%b %e" },
         },
         // Default to a ~1-day window centered on "now" rather than the
         // rangeSelector's own "1d" button, which anchors to the END of the
         // dataset (the last forecast day), not today.
-        min: Date.now() - 2 * 60 * 60 * 1000,
-        max: Date.now() + 22 * 60 * 60 * 1000,
+        min: mountedAt - 2 * 60 * 60 * 1000,
+        max: mountedAt + 22 * 60 * 60 * 1000,
         plotLines: [
           {
-            value: Date.now(),
+            value: mountedAt,
             color: "var(--accent)",
             width: 2,
             zIndex: 5,
@@ -158,7 +161,7 @@ export const ZoomableChart = <
         },
       ],
     };
-  }, [data, dataKey, kind, color, label, unit, prefersReducedMotion]);
+  }, [data, dataKey, kind, color, label, unit, prefersReducedMotion, mountedAt]);
 
   return (
     <div className="flex flex-col relative h-full">

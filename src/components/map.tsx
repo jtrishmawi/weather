@@ -124,28 +124,38 @@ export const Map = ({
     `;
 
   useEffect(() => {
-    const tempDiv = document.createElement("div");
-    tempDiv.style.position = "absolute";
-    tempDiv.style.visibility = "hidden";
-    tempDiv.innerHTML = html;
-    document.body.appendChild(tempDiv);
+    // Measure in a rAF callback so the setState happens asynchronously (no
+    // cascading sync render) and the off-screen measurement doesn't force an
+    // extra layout mid-render.
+    const frame = requestAnimationFrame(() => {
+      const tempDiv = document.createElement("div");
+      tempDiv.style.position = "absolute";
+      tempDiv.style.visibility = "hidden";
+      tempDiv.innerHTML = html;
+      document.body.appendChild(tempDiv);
 
-    const content = tempDiv.firstElementChild as HTMLElement;
-    const width = content.offsetWidth;
-    const height = content.offsetHeight;
+      const content = tempDiv.firstElementChild as HTMLElement;
+      const width = content.offsetWidth;
+      const height = content.offsetHeight;
 
-    document.body.removeChild(tempDiv);
+      document.body.removeChild(tempDiv);
 
-    // Set icon with dynamic anchor (top-right)
-    const icon = new L.DivIcon({
-      html,
-      className: "",
-      iconAnchor: [width, height],
+      // Set icon with dynamic anchor (top-right)
+      setCustomIcon(
+        new L.DivIcon({
+          html,
+          className: "",
+          iconAnchor: [width, height],
+        })
+      );
     });
 
-    setCustomIcon(icon);
+    return () => cancelAnimationFrame(frame);
   }, [html]);
 
+  // isolate confines Leaflet's internal z-indexes (controls go up to 1000)
+  // to the map's own stacking context, so they can't cover the header
+  // dropdowns/panel.
   return (
     <MapContainer
       center={[latitude, longitude]}
@@ -153,7 +163,7 @@ export const Map = ({
       minZoom={1}
       maxZoom={9}
       scrollWheelZoom={false}
-      className="h-full w-full aspect-video rounded-xl border border-border overflow-hidden"
+      className="isolate h-full w-full aspect-video rounded-xl border border-border overflow-hidden"
     >
       <ChangeView coords={[latitude, longitude]} />
       <RecenterControl coords={[latitude, longitude]} />
