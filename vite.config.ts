@@ -1,24 +1,34 @@
 import { pluginUnused } from "@gatsbylabs/vite-plugin-unused";
 import react from "@vitejs/plugin-react";
-import path from "path";
+import path from "node:path";
 import { visualizer } from "rollup-plugin-visualizer";
 import { defineConfig } from "vite";
 import mkcert from "vite-plugin-mkcert";
+
 const isVercel = process.env.VERCEL === "1";
+const isDev = process.env.NODE_ENV === "development";
 
 export default defineConfig({
-  plugins: [react(), mkcert(), pluginUnused({})],
+  plugins: [
+    react(),
+
+    // Local HTTPS certificates only.
+    ...(isDev && !isVercel ? [mkcert()] : []),
+
+    // Disable on Vercel until compatibility is confirmed.
+    ...(!isVercel ? [pluginUnused({})] : []),
+  ],
+
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
   },
+
   build: {
     rollupOptions: {
       plugins: isVercel ? [] : [visualizer({ open: true })],
       output: {
-        // Vite 8 bundles with rolldown, which replaces manualChunks with
-        // advancedChunks. (recharts was dropped for highcharts a while ago.)
         advancedChunks: {
           groups: [
             {
