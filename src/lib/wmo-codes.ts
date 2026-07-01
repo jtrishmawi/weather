@@ -291,6 +291,6 @@ export const getWMOCode = (wmoCode: string, time: "day" | "night" = "day") =>
 
 export const getWMOImageUrl = (
   wmoCode: string,
-  time: "day" | "night" = "day"
+  time: "day" | "night" = "day",
 ) =>
   lookup[wmoCode]?.[time]?.["image"] || "https://placehold.co/100?text=Unknown";

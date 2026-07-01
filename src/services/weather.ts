@@ -81,7 +81,7 @@ const parseWeatherResponse = (response: WeatherApiResponse): WeatherObject => {
       time: range(
         Number(daily.time()),
         Number(daily.timeEnd()),
-        daily.interval()
+        daily.interval(),
       ).map((t) => new Date(t * 1000)),
       weatherCode: daily.variables(0)!.valuesArray()!,
       temperature2mMax: daily.variables(1)!.valuesArray()!,
@@ -90,10 +90,10 @@ const parseWeatherResponse = (response: WeatherApiResponse): WeatherObject => {
       // sunrise/sunset are Unix-timestamp variables, not Float32 values, so
       // they must be read via valuesInt64(i) rather than valuesArray().
       sunrise: range(0, daily.variables(4)!.valuesInt64Length(), 1).map(
-        (i) => new Date(Number(daily.variables(4)!.valuesInt64(i)) * 1000)
+        (i) => new Date(Number(daily.variables(4)!.valuesInt64(i)) * 1000),
       ),
       sunset: range(0, daily.variables(5)!.valuesInt64Length(), 1).map(
-        (i) => new Date(Number(daily.variables(5)!.valuesInt64(i)) * 1000)
+        (i) => new Date(Number(daily.variables(5)!.valuesInt64(i)) * 1000),
       ),
       daylightDuration: daily.variables(6)!.valuesArray()!,
       uvIndexMax: daily.variables(7)!.valuesArray()!,
@@ -106,7 +106,7 @@ const parseWeatherResponse = (response: WeatherApiResponse): WeatherObject => {
       time: range(
         Number(hourly.time()),
         Number(hourly.timeEnd()),
-        hourly.interval()
+        hourly.interval(),
       ).map((t) => new Date(t * 1000)),
       temperature2m: hourly.variables(0)!.valuesArray()!,
       precipitation: hourly.variables(1)!.valuesArray()!,
@@ -123,7 +123,7 @@ const parseWeatherResponse = (response: WeatherApiResponse): WeatherObject => {
 // Open-Meteo accepts coordinate arrays, so every location is fetched in a
 // single request and the responses come back in the same order.
 export const fetchWeatherForLocations = async (
-  locations: WeatherLocation[]
+  locations: WeatherLocation[],
 ): Promise<Record<string, WeatherObject>> => {
   const weatherParams = {
     ...weatherVariables,
@@ -137,7 +137,7 @@ export const fetchWeatherForLocations = async (
 
   if (responses.length !== locations.length) {
     throw new Error(
-      `Weather API returned ${responses.length} locations, expected ${locations.length}`
+      `Weather API returned ${responses.length} locations, expected ${locations.length}`,
     );
   }
 
@@ -145,6 +145,6 @@ export const fetchWeatherForLocations = async (
     locations.map((location, i) => [
       location.id,
       parseWeatherResponse(responses[i]),
-    ])
+    ]),
   );
 };

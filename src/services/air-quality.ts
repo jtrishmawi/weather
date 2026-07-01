@@ -3,7 +3,7 @@ import { fetchWeatherApi } from "openmeteo";
 type WeatherApiResponse = Awaited<ReturnType<typeof fetchWeatherApi>>[number];
 
 const parseAirQualityResponse = (
-  response: WeatherApiResponse
+  response: WeatherApiResponse,
 ): AirQualityObject => {
   const current = response.current()!;
 
@@ -22,7 +22,7 @@ const parseAirQualityResponse = (
 // Same multi-location pattern as the weather service: one request for every
 // location, responses in input order.
 export const fetchAirQualityForLocations = async (
-  locations: WeatherLocation[]
+  locations: WeatherLocation[],
 ): Promise<Record<string, AirQualityObject>> => {
   const airQualityParams = {
     current: ["us_aqi", "european_aqi", "pm2_5", "pm10", "ozone"],
@@ -35,7 +35,7 @@ export const fetchAirQualityForLocations = async (
 
   if (responses.length !== locations.length) {
     throw new Error(
-      `Air quality API returned ${responses.length} locations, expected ${locations.length}`
+      `Air quality API returned ${responses.length} locations, expected ${locations.length}`,
     );
   }
 
@@ -43,6 +43,6 @@ export const fetchAirQualityForLocations = async (
     locations.map((location, i) => [
       location.id,
       parseAirQualityResponse(responses[i]),
-    ])
+    ]),
   );
 };

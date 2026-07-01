@@ -4,19 +4,18 @@ import "highcharts/esm/modules/accessibility.js";
 import { HighchartsReact } from "highcharts-react-official";
 import { useMemo, useState } from "react";
 
-type ZoomableChartProps<T extends Record<string, number> & { time: number }> =
-  {
-    kind: "line" | "bar";
-    data: T[];
-    dataKey: keyof T & string;
-    unit: string;
-    color: string;
-    label: string;
-  };
+type ZoomableChartProps<T extends Record<string, number> & { time: number }> = {
+  kind: "line" | "bar";
+  data: T[];
+  dataKey: keyof T & string;
+  unit: string;
+  color: string;
+  label: string;
+};
 
 const summarize = <T extends Record<string, number> & { time: number }>(
   data: T[],
-  dataKey: keyof T & string
+  dataKey: keyof T & string,
 ) => {
   if (data.length === 0) return null;
   const now = Date.now();
@@ -32,7 +31,7 @@ const summarize = <T extends Record<string, number> & { time: number }>(
 };
 
 export const ZoomableChart = <
-  T extends Record<string, number> & { time: number }
+  T extends Record<string, number> & { time: number },
 >({
   kind,
   data,
@@ -161,7 +160,16 @@ export const ZoomableChart = <
         },
       ],
     };
-  }, [data, dataKey, kind, color, label, unit, prefersReducedMotion, mountedAt]);
+  }, [
+    data,
+    dataKey,
+    kind,
+    color,
+    label,
+    unit,
+    prefersReducedMotion,
+    mountedAt,
+  ]);
 
   return (
     <div className="flex flex-col relative h-full">

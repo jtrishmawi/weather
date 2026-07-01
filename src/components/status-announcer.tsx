@@ -8,7 +8,9 @@ export const StatusAnnouncer = () => {
     // A repeated identical message wouldn't re-render (and so wouldn't be
     // re-announced); suffix a non-breaking space to force the change.
     setAnnounceListener((next) =>
-      setMessage((prev) => (prev === next ? next + String.fromCharCode(160) : next))
+      setMessage((prev) =>
+        prev === next ? next + String.fromCharCode(160) : next,
+      ),
     );
     return () => setAnnounceListener(null);
   }, []);

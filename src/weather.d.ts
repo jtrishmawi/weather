@@ -126,4 +126,3 @@ type GeocodingObject = {
     }[];
   };
 };
-

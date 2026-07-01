@@ -21,7 +21,7 @@ export const fetchRadarLayers = async (): Promise<{
   satelliteUrl: string | null;
 }> => {
   const response = await fetch(
-    "https://api.rainviewer.com/public/weather-maps.json"
+    "https://api.rainviewer.com/public/weather-maps.json",
   );
   if (!response.ok) return { radarUrl: null, satelliteUrl: null };
 

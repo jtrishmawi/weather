@@ -29,7 +29,7 @@ export const CitySearch = ({
       announce(
         results.length === 0
           ? `No cities found for ${searched}`
-          : `${results.length} result${results.length > 1 ? "s" : ""} for ${searched}`
+          : `${results.length} result${results.length > 1 ? "s" : ""} for ${searched}`,
       );
     },
     onError: () => announce("City search failed"),
@@ -64,7 +64,11 @@ export const CitySearch = ({
           aria-describedby={search.isError ? errorId : undefined}
           className="h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] dark:bg-input/30 dark:border-input"
         />
-        <Button type="submit" variant="outline" aria-disabled={search.isPending}>
+        <Button
+          type="submit"
+          variant="outline"
+          aria-disabled={search.isPending}
+        >
           {search.isPending ? (
             <Loader2
               aria-hidden="true"
@@ -116,7 +120,7 @@ export const CitySearch = ({
                   {cityLabel(city)}
                 </Button>
               </li>
-            )
+            ),
           )}
         </ul>
       )}

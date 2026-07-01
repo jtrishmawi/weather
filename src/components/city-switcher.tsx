@@ -72,7 +72,7 @@ export const CitySwitcher = ({
           ? `Showing weather for ${geoLabel}`
           : geoStatus === "locating"
             ? "Locating you…"
-            : "Your location is unavailable. Retrying — allow location access in your browser."
+            : "Your location is unavailable. Retrying — allow location access in your browser.",
       );
     } else {
       const city = cities.find((c) => c.id === id);
@@ -99,13 +99,15 @@ export const CitySwitcher = ({
           <Button ref={triggerRef} variant="outline">
             <MapPinIcon aria-hidden="true" focusable="false" />
             <span className="sr-only">Change city, currently: </span>
-            <span className="max-w-40 truncate sm:max-w-64">{currentLabel}</span>
+            <span className="max-w-40 truncate sm:max-w-64">
+              {currentLabel}
+            </span>
             <ChevronDownIcon aria-hidden="true" focusable="false" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align="end"
-          className="z-[401]"
+          className="z-401"
           onCloseAutoFocus={(e) => {
             if (openingPanel.current) {
               openingPanel.current = false;
@@ -115,7 +117,10 @@ export const CitySwitcher = ({
           }}
         >
           <DropdownMenuLabel>Cities</DropdownMenuLabel>
-          <DropdownMenuRadioGroup value={selectedId} onValueChange={handleSelect}>
+          <DropdownMenuRadioGroup
+            value={selectedId}
+            onValueChange={handleSelect}
+          >
             <DropdownMenuRadioItem value={GEO_CITY_ID}>
               {geoLabel}
               {geoStatus !== "ready" && (
@@ -148,7 +153,7 @@ export const CitySwitcher = ({
           onKeyDown={(e) => {
             if (e.key === "Escape") closePanel();
           }}
-          className="fixed inset-x-2 top-16 z-[401] max-h-[min(70vh,28rem)] overflow-y-auto rounded-lg border bg-background p-4 shadow-lg sm:absolute sm:inset-x-auto sm:right-0 sm:top-full sm:mt-2 sm:w-96 sm:max-w-[calc(100vw-1rem)]"
+          className="fixed inset-x-2 top-16 z-401 max-h-[min(70vh,28rem)] overflow-y-auto rounded-lg border bg-background p-4 shadow-lg sm:absolute sm:inset-x-auto sm:right-0 sm:top-full sm:mt-2 sm:w-96 sm:max-w-[calc(100vw-1rem)]"
         >
           <div className="flex items-center justify-between gap-2">
             <h2

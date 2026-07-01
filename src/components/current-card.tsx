@@ -55,7 +55,7 @@ export const CurrentCard = ({
           <span className="font-semibold lowercase">
             {getWMOCode(
               weather.current.weatherCode.toString(),
-              weather.current.isDay ? "day" : "night"
+              weather.current.isDay ? "day" : "night",
             )}
             .
           </span>
@@ -71,13 +71,13 @@ export const CurrentCard = ({
             <img
               src={getWMOImageUrl(
                 weather.current.weatherCode.toString(),
-                weather.current.isDay ? "day" : "night"
+                weather.current.isDay ? "day" : "night",
               )}
               alt={getWMOCode(
                 weather.current.weatherCode.toString(),
-                weather.current.isDay ? "day" : "night"
+                weather.current.isDay ? "day" : "night",
               )}
-              className="aspect-square h-[80px] object-none invert dark:invert-0"
+              className="aspect-square h-20 object-none invert dark:invert-0"
             />
             <div className="text-5xl font-bold font-mono">
               {Math.round(weather.current.temperature2m)}
@@ -85,10 +85,10 @@ export const CurrentCard = ({
             </div>
           </div>
           <div className="flex items-center justify-around grow max-w-64">
-            <div className="p-[10px]">
+            <div className="p-2.5">
               <Compass
                 direction={weather.current.windDirection10m}
-                className="aspect-square w-auto h-[60px]"
+                className="aspect-square w-auto h-15"
               />
             </div>
             <div className="text-5xl font-bold font-mono">
@@ -97,8 +97,8 @@ export const CurrentCard = ({
             </div>
           </div>
           <div className="flex items-center justify-around grow max-w-64">
-            <div className="p-[10px]">
-              <DropletsIcon className="aspect-square w-auto h-[60px]" />
+            <div className="p-2.5">
+              <DropletsIcon className="aspect-square w-auto h-15" />
             </div>
             <div className="text-5xl font-bold font-mono">
               {Math.round(weather.current.relativeHumidity2m)}
@@ -107,9 +107,9 @@ export const CurrentCard = ({
           </div>
           {airQuality && aqiSeverity && (
             <div className="flex items-center justify-around grow max-w-64">
-              <div className="p-[10px]">
+              <div className="p-2.5">
                 <Leaf
-                  className={`aspect-square w-auto h-[60px] ${aqiSeverity.colorClass}`}
+                  className={`aspect-square w-auto h-15 ${aqiSeverity.colorClass}`}
                   aria-hidden="true"
                 />
               </div>
@@ -117,12 +117,14 @@ export const CurrentCard = ({
                 <div
                   className={`text-5xl font-bold font-mono ${aqiSeverity.colorClass}`}
                   aria-label={`Air quality index ${Math.round(
-                    airQuality.current.usAqi
+                    airQuality.current.usAqi,
                   )}, ${aqiSeverity.label}`}
                 >
                   {Math.round(airQuality.current.usAqi)}
                 </div>
-                <div className={`text-sm font-medium ${aqiSeverity.colorClass}`}>
+                <div
+                  className={`text-sm font-medium ${aqiSeverity.colorClass}`}
+                >
                   {aqiSeverity.label}
                 </div>
               </div>

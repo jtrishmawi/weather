@@ -1,4 +1,3 @@
-
 type CompassProps = {
   direction: number;
   className?: string;

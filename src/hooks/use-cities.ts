@@ -24,7 +24,7 @@ const loadCities = (): CitiesState => {
           typeof c.id === "string" &&
           typeof c.name === "string" &&
           typeof c.latitude === "number" &&
-          typeof c.longitude === "number"
+          typeof c.longitude === "number",
       ),
       selectedId:
         typeof parsed.selectedId === "string" ? parsed.selectedId : GEO_CITY_ID,
@@ -62,7 +62,8 @@ export const useCities = () => {
       selectedId: s.selectedId === id ? GEO_CITY_ID : s.selectedId,
     }));
 
-  const selectCity = (id: string) => setState((s) => ({ ...s, selectedId: id }));
+  const selectCity = (id: string) =>
+    setState((s) => ({ ...s, selectedId: id }));
 
   return { ...state, addCity, removeCity, selectCity };
 };

@@ -6,7 +6,7 @@ export const fetchAddress = async ({
     return Promise.reject(new Error("latitude and longitude are required"));
   }
   const url = new URL(
-    "https://api.bigdatacloud.net/data/reverse-geocode-client"
+    "https://api.bigdatacloud.net/data/reverse-geocode-client",
   );
   url.searchParams.append("latitude", String(latitude));
   url.searchParams.append("longitude", String(longitude));

@@ -38,7 +38,7 @@ export const App = () => {
         longitude,
       })),
     ],
-    [geo.data, cities]
+    [geo.data, cities],
   );
 
   const weatherQuery = useWeatherForLocations(locations);
@@ -160,7 +160,7 @@ export const App = () => {
     <div className="w-full min-h-screen flex flex-col px-2 sm:px-8 pb-4">
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-[500] focus:rounded-md focus:border focus:bg-background focus:px-3 focus:py-2"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-500 focus:rounded-md focus:border focus:bg-background focus:px-3 focus:py-2"
       >
         Skip to content
       </a>

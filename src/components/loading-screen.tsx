@@ -123,7 +123,7 @@ export const LoadingScreen = ({
     announce(
       geoDenied
         ? "Location permission denied. You can add a city manually instead."
-        : "Your location is unavailable. You can add a city manually instead."
+        : "Your location is unavailable. You can add a city manually instead.",
     );
     fallbackHeadingRef.current?.focus();
   }, [showCityFallback, geoDenied]);

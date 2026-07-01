@@ -42,10 +42,10 @@ export const fetchGeolocation = async (): Promise<GeolocationObject> => {
         reject(
           new GeolocationError(
             GEO_ERROR_MESSAGES[err.code] ?? err.message,
-            err.code
-          )
+            err.code,
+          ),
         ),
-      { timeout: 15000, maximumAge: 5 * 60 * 1000 }
+      { timeout: 15000, maximumAge: 5 * 60 * 1000 },
     );
   });
 };

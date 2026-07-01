@@ -30,8 +30,10 @@ export const OverviewChart = (data: OverviewChartProps) => {
     const rainCharts: { rain: number; time: number }[] = [];
     const humidityCharts: { humidity: number; time: number }[] = [];
     const windCharts: { wind: number; time: number }[] = [];
-    const precipProbabilityCharts: { precipProbability: number; time: number }[] =
-      [];
+    const precipProbabilityCharts: {
+      precipProbability: number;
+      time: number;
+    }[] = [];
     const uvCharts: { uv: number; time: number }[] = [];
     data.time.forEach((t, index) => {
       const time = t.getTime();
@@ -118,7 +120,9 @@ export const OverviewChart = (data: OverviewChartProps) => {
           <WindChart windCharts={windCharts} />
         </TabsContent>
         <TabsContent value="precipProbability" className="flex-1">
-          <PrecipProbabilityChart precipProbabilityCharts={precipProbabilityCharts} />
+          <PrecipProbabilityChart
+            precipProbabilityCharts={precipProbabilityCharts}
+          />
         </TabsContent>
         <TabsContent value="uv" className="flex-1">
           <UvChart uvCharts={uvCharts} />
