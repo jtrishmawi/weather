@@ -26,6 +26,9 @@
   --destructive-foreground: #ffffff;
   --border: #e0f0f8;
   --input: #e0f0f8;
+  /* Scrollbar thumbs need 3:1 against background and card (WCAG 1.4.11);
+     --border only reaches ~1.1:1, so they get their own token. */
+  --scrollbar-thumb: #64748b;
   --ring: #0284c7;
   --chart-1: #0284c7;
   --chart-2: #0ea5e9;
@@ -62,6 +65,7 @@
   --destructive-foreground: #0b1120;
   --border: #1e293b;
   --input: #1e293b;
+  --scrollbar-thumb: #64748b;
   --ring: #38bdf8;
   --chart-1: #38bdf8;
   --chart-2: #0ea5e9;
@@ -99,6 +103,7 @@
   --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
+  --color-scrollbar-thumb: var(--scrollbar-thumb);
   --color-ring: var(--ring);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
@@ -158,13 +163,13 @@
   ::-webkit-scrollbar-thumb {
     border: 1px solid transparent;
     background-clip: padding-box;
-    background-color: var(--border);
+    background-color: var(--scrollbar-thumb);
     border-radius: 9999px;
   }
   @supports not selector(::-webkit-scrollbar) {
     * {
       scrollbar-width: thin;
-      scrollbar-color: var(--border) transparent;
+      scrollbar-color: var(--scrollbar-thumb) transparent;
     }
   }
 }
