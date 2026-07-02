@@ -139,6 +139,34 @@
     font-size: 0.5rem !important;
     padding: 0.25rem !important;
   }
+
+  /* Native scrollbars (page, manage-cities panel, chart overflow) match the
+     Radix ScrollArea used in the forecast: transparent track, thin rounded
+     border-colored thumb. Chromium/Safari take the -webkit path; the standard
+     properties are scoped to other engines (Firefox) because setting
+     scrollbar-color disables ::-webkit-scrollbar styling in Chromium. */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+  ::-webkit-scrollbar-corner {
+    background-color: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    border: 1px solid transparent;
+    background-clip: padding-box;
+    background-color: var(--border);
+    border-radius: 9999px;
+  }
+  @supports not selector(::-webkit-scrollbar) {
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+  }
 }
 
 /* Leaflet ships its own unlayered stylesheet, which always outranks anything

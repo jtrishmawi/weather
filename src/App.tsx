@@ -164,7 +164,7 @@ export const App = () => {
       >
         Skip to content
       </a>
-      <header className="relative flex items-center py-4 gap-4">
+      <header className="relative flex flex-wrap items-center py-4 gap-x-4 gap-y-2">
         <h1
           ref={headingRef}
           tabIndex={-1}
@@ -173,7 +173,7 @@ export const App = () => {
           <span className="hidden sm:inline-block">Weather in</span>{" "}
           {headingLabel}
         </h1>
-        <div className="ml-auto flex items-center gap-4">
+        <div className="ml-auto flex flex-wrap items-center justify-end gap-2 gap-y-2 sm:gap-4">
           <CitySwitcher
             cities={cities}
             selectedId={activeId}

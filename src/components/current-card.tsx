@@ -67,7 +67,7 @@ export const CurrentCard = ({
           </small>
         </p>
         <div className="flex items-center justify-evenly gap-6 flex-wrap pb-4">
-          <div className="flex items-center justify-around grow max-w-64">
+          <div className="flex basis-full items-center justify-around grow max-w-64 @md/current:basis-auto">
             <img
               src={getWMOImageUrl(
                 weather.current.weatherCode.toString(),
@@ -84,7 +84,7 @@ export const CurrentCard = ({
               <span className="text-3xl">&deg;C</span>
             </div>
           </div>
-          <div className="flex items-center justify-around grow max-w-64">
+          <div className="flex basis-full items-center justify-around grow max-w-64 @md/current:basis-auto">
             <div className="p-2.5">
               <Compass
                 direction={weather.current.windDirection10m}
@@ -92,21 +92,26 @@ export const CurrentCard = ({
               />
             </div>
             <div className="text-5xl font-bold font-mono">
+              <span className="sr-only">Wind speed </span>
               {Math.round(weather.current.windSpeed10m)}
               <span className="text-3xl">km/h</span>
             </div>
           </div>
-          <div className="flex items-center justify-around grow max-w-64">
+          <div className="flex basis-full items-center justify-around grow max-w-64 @md/current:basis-auto">
             <div className="p-2.5">
-              <DropletsIcon className="aspect-square w-auto h-15" />
+              <DropletsIcon
+                className="aspect-square w-auto h-15"
+                aria-hidden="true"
+              />
             </div>
             <div className="text-5xl font-bold font-mono">
+              <span className="sr-only">Humidity </span>
               {Math.round(weather.current.relativeHumidity2m)}
               <span className="text-3xl">%</span>
             </div>
           </div>
           {airQuality && aqiSeverity && (
-            <div className="flex items-center justify-around grow max-w-64">
+            <div className="flex basis-full items-center justify-around grow max-w-64 @md/current:basis-auto">
               <div className="p-2.5">
                 <Leaf
                   className={`aspect-square w-auto h-15 ${aqiSeverity.colorClass}`}
@@ -116,10 +121,8 @@ export const CurrentCard = ({
               <div className="text-right">
                 <div
                   className={`text-5xl font-bold font-mono ${aqiSeverity.colorClass}`}
-                  aria-label={`Air quality index ${Math.round(
-                    airQuality.current.usAqi,
-                  )}, ${aqiSeverity.label}`}
                 >
+                  <span className="sr-only">Air quality index </span>
                   {Math.round(airQuality.current.usAqi)}
                 </div>
                 <div

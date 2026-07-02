@@ -99,7 +99,7 @@ export const CitySwitcher = ({
           <Button ref={triggerRef} variant="outline">
             <MapPinIcon aria-hidden="true" focusable="false" />
             <span className="sr-only">Change city, currently: </span>
-            <span className="max-w-40 truncate sm:max-w-64">
+            <span className="max-w-24 truncate min-[480px]:max-w-40 sm:max-w-64">
               {currentLabel}
             </span>
             <ChevronDownIcon aria-hidden="true" focusable="false" />

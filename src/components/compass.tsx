@@ -5,7 +5,13 @@ type CompassProps = {
 
 export const Compass = ({ direction, className }: CompassProps) => {
   return (
-    <svg viewBox="0 0 312.20001 312.20001" version="1.1" className={className}>
+    <svg
+      viewBox="0 0 312.20001 312.20001"
+      version="1.1"
+      className={className}
+      aria-hidden="true"
+      focusable="false"
+    >
       <circle
         fill="#153359"
         cx="156.10001"

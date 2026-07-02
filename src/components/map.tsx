@@ -1,5 +1,6 @@
 import { useTheme } from "@/hooks/use-theme";
 import { getAqiSeverity } from "@/lib/aqi";
+import { announce } from "@/lib/announcer";
 import { getWMOCode, getWMOImageUrl } from "@/lib/wmo-codes";
 import { fetchRadarLayers } from "@/services/rainviewer";
 import L from "leaflet";
@@ -26,15 +27,60 @@ type MapProps = {
   usAqi?: number;
 };
 
-function ChangeView({ coords }: { coords: [number, number] }) {
+// The marker icon is anchored at its bottom-right corner, so it extends up
+// and left of the location. Center on the location, then pan just enough to
+// keep the whole icon inside the viewport (it can poke past the top/left
+// edge on small maps).
+const ICON_PADDING = 12;
+// Extra left clearance so a panned-in icon lands beside the zoom control
+// (30px control + 10px margin + gap) instead of underneath it.
+const CONTROL_CLEARANCE = 52;
+function setViewWithIconVisible(
+  map: L.Map,
+  coords: [number, number],
+  iconSize: [number, number] | null,
+) {
+  map.setView(coords, 6, { animate: false });
+  if (!iconSize) return;
+  const { x: mapWidth, y: mapHeight } = map.getSize();
+  // Never pan the marker anchor itself out of view: if the icon is larger
+  // than the viewport allows, clamp instead of pushing the location off-map.
+  const clamp = (wanted: number, limit: number) =>
+    Math.min(0, Math.max(wanted, -limit));
+  const dx = clamp(
+    mapWidth / 2 - iconSize[0] - CONTROL_CLEARANCE,
+    mapWidth / 2 - ICON_PADDING,
+  );
+  const dy = clamp(
+    mapHeight / 2 - iconSize[1] - ICON_PADDING,
+    mapHeight / 2 - ICON_PADDING,
+  );
+  if (dx || dy) map.panBy([dx, dy], { animate: false });
+}
+
+function ChangeView({
+  coords,
+  iconSize,
+}: {
+  coords: [number, number];
+  iconSize: [number, number] | null;
+}) {
   const map = useMap();
   useEffect(() => {
-    map.setView(coords, 6);
-  }, [coords, map]);
+    setViewWithIconVisible(map, coords, iconSize);
+  }, [coords, map, iconSize]);
   return null;
 }
 
-function RecenterControl({ coords }: { coords: [number, number] }) {
+function RecenterControl({
+  coords,
+  iconSize,
+  city,
+}: {
+  coords: [number, number];
+  iconSize: [number, number] | null;
+  city: string;
+}) {
   const map = useMap();
   return (
     <div className="leaflet-top leaflet-right">
@@ -42,7 +88,10 @@ function RecenterControl({ coords }: { coords: [number, number] }) {
         <button
           type="button"
           aria-label="Recenter map on current location"
-          onClick={() => map.setView(coords, 6)}
+          onClick={() => {
+            setViewWithIconVisible(map, coords, iconSize);
+            announce(`Map recentered on ${city}`);
+          }}
           className="flex! h-8.5! w-8.5! items-center justify-center bg-card! text-card-foreground! hover:bg-muted!"
         >
           <LocateFixed className="size-4" aria-hidden="true" />
@@ -67,6 +116,7 @@ export const Map = ({
   const { theme } = useTheme();
   const darkMode = theme === "dark";
   const [customIcon, setCustomIcon] = useState<L.DivIcon | null>(null);
+  const [iconSize, setIconSize] = useState<[number, number] | null>(null);
   const [radarUrl, setRadarUrl] = useState<string | null>(null);
   const [satelliteUrl, setSatelliteUrl] = useState<string | null>(null);
 
@@ -148,6 +198,7 @@ export const Map = ({
           iconAnchor: [width, height],
         }),
       );
+      setIconSize([width, height]);
     });
 
     return () => cancelAnimationFrame(frame);
@@ -165,8 +216,12 @@ export const Map = ({
       scrollWheelZoom={false}
       className="isolate h-full w-full aspect-video rounded-xl border border-border overflow-hidden"
     >
-      <ChangeView coords={[latitude, longitude]} />
-      <RecenterControl coords={[latitude, longitude]} />
+      <ChangeView coords={[latitude, longitude]} iconSize={iconSize} />
+      <RecenterControl
+        coords={[latitude, longitude]}
+        iconSize={iconSize}
+        city={city}
+      />
       <TileLayer
         url={
           darkMode
