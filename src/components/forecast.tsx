@@ -113,10 +113,14 @@ export const Forecast = (data: ForecastProps) => {
                 </span>
                 <span>{formatDaylight(cast.daylightDuration)} daylight</span>
                 <span>{decimalFormat(cast.precipitationSum)}mm rain</span>
-                <span>
-                  {numberFormat(cast.precipitationProbabilityMax)}% chance
-                  <span className="sr-only"> of precipitation</span>
-                </span>
+                {/* Open-Meteo has no precipitation probability beyond ~15
+                    days; the SDK reads the nulls back as NaN. */}
+                {!Number.isNaN(cast.precipitationProbabilityMax) && (
+                  <span>
+                    {numberFormat(cast.precipitationProbabilityMax)}% chance
+                    <span className="sr-only"> of precipitation</span>
+                  </span>
+                )}
                 <span>UV {numberFormat(cast.uvIndexMax)}</span>
                 <span className="flex items-center gap-1">
                   <Wind aria-hidden="true" className="size-3.5" />
