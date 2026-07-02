@@ -9,8 +9,8 @@ export const WindChart = ({
     kind="line"
     data={windCharts}
     dataKey="wind"
-    unit="km/h"
+    unitKey="unit.kmh"
     color="var(--chart-5)"
-    label="Wind speed"
+    label="chart.windSpeed"
   />
 );

@@ -2,6 +2,34 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <!-- Apply the detected language before first paint so Arabic users don't
+         see an LTR flash; mirrors detectLanguage() in src/i18n (persisted
+         choice, then browser languages), whose storage key must match. -->
+    <script>
+      (function () {
+        try {
+          var isLang = function (l) {
+            return l === "en" || l === "fr" || l === "ar";
+          };
+          var lang = localStorage.getItem("weather-lang");
+          if (!isLang(lang)) {
+            var tags = navigator.languages || [navigator.language];
+            lang = null;
+            for (var i = 0; i < tags.length; i++) {
+              var primary = (tags[i] || "").split("-")[0];
+              if (isLang(primary)) {
+                lang = primary;
+                break;
+              }
+            }
+          }
+          if (lang) {
+            document.documentElement.lang = lang;
+            document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+          }
+        } catch (e) {}
+      })();
+    </script>
     <link rel="icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- Primary Meta Tags -->

@@ -9,8 +9,7 @@ export const UvChart = ({
     kind="line"
     data={uvCharts}
     dataKey="uv"
-    unit=""
     color="var(--chart-3)"
-    label="UV index"
+    label="chart.uvIndex"
   />
 );

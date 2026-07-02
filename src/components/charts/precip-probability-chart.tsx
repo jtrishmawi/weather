@@ -9,8 +9,8 @@ export const PrecipProbabilityChart = ({
     kind="bar"
     data={precipProbabilityCharts}
     dataKey="precipProbability"
-    unit="%"
+    unitKey="unit.percent"
     color="var(--chart-2)"
-    label="Precipitation probability"
+    label="chart.precipProbability"
   />
 );

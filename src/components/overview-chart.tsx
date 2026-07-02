@@ -5,6 +5,7 @@ import { TempChart } from "@/components/charts/temp-chart";
 import { UvChart } from "@/components/charts/uv-chart";
 import { WindChart } from "@/components/charts/wind-chart";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useLanguage } from "@/hooks/use-language";
 import { useMemo } from "react";
 
 type OverviewChartProps = {
@@ -18,6 +19,7 @@ type OverviewChartProps = {
 };
 
 export const OverviewChart = (data: OverviewChartProps) => {
+  const { t } = useLanguage();
   const {
     tempCharts,
     rainCharts,
@@ -94,16 +96,20 @@ export const OverviewChart = (data: OverviewChartProps) => {
       >
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
           <h2 className="scroll-m-20 pb-2 text-2xl sm:text-3xl font-semibold tracking-tight first:mt-0">
-            Overview
+            {t("overview.title")}
           </h2>
           <div className="overflow-x-auto">
             <TabsList className="w-max">
-              <TabsTrigger value="temperature">Temperature</TabsTrigger>
-              <TabsTrigger value="rain">Rain</TabsTrigger>
-              <TabsTrigger value="humidity">Humidity</TabsTrigger>
-              <TabsTrigger value="wind">Wind</TabsTrigger>
-              <TabsTrigger value="precipProbability">Precip %</TabsTrigger>
-              <TabsTrigger value="uv">UV</TabsTrigger>
+              <TabsTrigger value="temperature">
+                {t("chart.temperature")}
+              </TabsTrigger>
+              <TabsTrigger value="rain">{t("chart.rain")}</TabsTrigger>
+              <TabsTrigger value="humidity">{t("chart.humidity")}</TabsTrigger>
+              <TabsTrigger value="wind">{t("chart.wind")}</TabsTrigger>
+              <TabsTrigger value="precipProbability">
+                {t("chart.precipPercent")}
+              </TabsTrigger>
+              <TabsTrigger value="uv">{t("chart.uv")}</TabsTrigger>
             </TabsList>
           </div>
         </div>

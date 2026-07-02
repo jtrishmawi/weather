@@ -1,36 +1,40 @@
-export const getAqiSeverity = (aqi: number) => {
+import type { MessageKey } from "@/i18n";
+
+export const getAqiSeverity = (
+  aqi: number,
+): { labelKey: MessageKey; colorClass: string; bgClass: string } => {
   if (aqi <= 50)
     return {
-      label: "Good",
+      labelKey: "aqi.good",
       colorClass: "text-green-500",
       bgClass: "bg-green-500/15",
     };
   if (aqi <= 100)
     return {
-      label: "Moderate",
+      labelKey: "aqi.moderate",
       colorClass: "text-yellow-500",
       bgClass: "bg-yellow-500/15",
     };
   if (aqi <= 150)
     return {
-      label: "Unhealthy for Sensitive Groups",
+      labelKey: "aqi.sensitive",
       colorClass: "text-orange-500",
       bgClass: "bg-orange-500/15",
     };
   if (aqi <= 200)
     return {
-      label: "Unhealthy",
+      labelKey: "aqi.unhealthy",
       colorClass: "text-red-500",
       bgClass: "bg-red-500/15",
     };
   if (aqi <= 300)
     return {
-      label: "Very Unhealthy",
+      labelKey: "aqi.veryUnhealthy",
       colorClass: "text-purple-500",
       bgClass: "bg-purple-500/15",
     };
   return {
-    label: "Hazardous",
+    labelKey: "aqi.hazardous",
     colorClass: "text-red-800",
     bgClass: "bg-red-800/15",
   };

@@ -1,3 +1,5 @@
+import { useLanguage } from "@/hooks/use-language";
+import type { MessageKey } from "@/i18n";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import Highcharts from "highcharts/esm/highstock.js";
 import "highcharts/esm/modules/accessibility.js";
@@ -8,9 +10,9 @@ type ZoomableChartProps<T extends Record<string, number> & { time: number }> = {
   kind: "line" | "bar";
   data: T[];
   dataKey: keyof T & string;
-  unit: string;
+  unitKey?: MessageKey;
   color: string;
-  label: string;
+  label: MessageKey;
 };
 
 const summarize = <T extends Record<string, number> & { time: number }>(
@@ -36,17 +38,28 @@ export const ZoomableChart = <
   kind,
   data,
   dataKey,
-  unit,
+  unitKey,
   color,
-  label,
+  label: labelKey,
 }: ZoomableChartProps<T>) => {
   const prefersReducedMotion = useReducedMotion();
+  const { t, locale } = useLanguage();
+  const label = t(labelKey);
+  const unit = unitKey ? t(unitKey) : "";
   const summary = summarize(data, dataKey);
   // "Now" is frozen at mount so re-renders don't shift the zoom window or the
   // plot line (render purity).
   const [mountedAt] = useState(() => Date.now());
 
   const options = useMemo<Highcharts.Options>(() => {
+    // Highcharts formats dates/numbers with the Intl APIs behind lang.locale
+    // (a global, so set before the chart is built). Charts stay LTR in the
+    // Arabic UI — time axes conventionally read left-to-right — but their
+    // labels and dates are localized.
+    Highcharts.setOptions({
+      lang: { locale, rangeSelectorZoom: t("chart.zoom") },
+    });
+
     const seriesData: [number, number][] = data.map((d) => [
       d.time,
       d[dataKey],
@@ -65,18 +78,37 @@ export const ZoomableChart = <
       credits: { enabled: false },
       accessibility: {
         enabled: true,
-        description: `${label} over time${unit ? `, in ${unit}` : ""}.`,
+        description: unit
+          ? t("chart.description", { label, unit })
+          : t("chart.descriptionNoUnit", { label }),
         point: { valueSuffix: unit },
       },
       rangeSelector: {
         enabled: true,
         inputEnabled: false,
         dropdown: "never",
+        // title doubles as the buttons' accessible description; without it
+        // Highcharts falls back to English defaults ("View all").
         buttons: [
-          { type: "hour", count: 24, text: "1d" },
-          { type: "day", count: 3, text: "3d" },
-          { type: "day", count: 7, text: "7d" },
-          { type: "all", text: "All" },
+          {
+            type: "hour",
+            count: 24,
+            text: t("chart.range1d"),
+            title: t("chart.range1dTitle"),
+          },
+          {
+            type: "day",
+            count: 3,
+            text: t("chart.range3d"),
+            title: t("chart.range3dTitle"),
+          },
+          {
+            type: "day",
+            count: 7,
+            text: t("chart.range7d"),
+            title: t("chart.range7dTitle"),
+          },
+          { type: "all", text: t("chart.rangeAll"), title: t("chart.rangeAllTitle") },
         ],
         buttonTheme: {
           fill: "var(--card)",
@@ -105,10 +137,6 @@ export const ZoomableChart = <
         lineColor: "var(--border)",
         tickColor: "var(--border)",
         labels: { style: { color: "var(--muted-foreground)" } },
-        dateTimeLabelFormats: {
-          hour: { main: "%l%p" },
-          day: { main: "%b %e" },
-        },
         // Default to a ~1-day window centered on "now" rather than the
         // rangeSelector's own "1d" button, which anchors to the END of the
         // dataset (the last forecast day), not today.
@@ -121,7 +149,7 @@ export const ZoomableChart = <
             width: 2,
             zIndex: 5,
             label: {
-              text: "Now",
+              text: t("chart.now"),
               style: { color: "var(--accent)" },
             },
           },
@@ -140,7 +168,6 @@ export const ZoomableChart = <
         borderColor: "var(--border)",
         style: { color: "var(--card-foreground)" },
         valueSuffix: unit,
-        xDateFormat: "%b %e, %l:%M%p",
       },
       legend: { enabled: false },
       plotOptions: {
@@ -167,6 +194,8 @@ export const ZoomableChart = <
     color,
     label,
     unit,
+    locale,
+    t,
     prefersReducedMotion,
     mountedAt,
   ]);
@@ -175,14 +204,20 @@ export const ZoomableChart = <
     <div className="flex flex-col relative h-full">
       {summary && (
         <p className="sr-only">
-          {label}: currently {Math.round(summary.current)}
-          {unit}, ranging from {Math.round(summary.min)}
-          {unit} to {Math.round(summary.max)}
-          {unit} over the shown period.
+          {t("chart.summary", {
+            label,
+            current: Math.round(summary.current),
+            min: Math.round(summary.min),
+            max: Math.round(summary.max),
+            unit,
+          })}
         </p>
       )}
       <div className="flex-1 min-h-64">
         <HighchartsReact
+          // Remount on language change so the chart is rebuilt with the new
+          // global lang.locale (chart.update doesn't re-read it).
+          key={locale}
           highcharts={Highcharts}
           constructorType="stockChart"
           options={options}

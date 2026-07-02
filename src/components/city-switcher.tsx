@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cityLabel, GEO_CITY_ID } from "@/hooks/use-cities";
+import { useLanguage } from "@/hooks/use-language";
 import { announce } from "@/lib/announcer";
 import {
   ChevronDownIcon,
@@ -22,12 +23,6 @@ import {
 import { useId, useRef, useState } from "react";
 
 export type GeoStatus = "ready" | "locating" | "unavailable";
-
-const GEO_STATUS_SUFFIX: Record<GeoStatus, string> = {
-  ready: "",
-  locating: " (locating…)",
-  unavailable: " (unavailable)",
-};
 
 export const CitySwitcher = ({
   cities,
@@ -48,6 +43,7 @@ export const CitySwitcher = ({
   onAdd: (city: City) => void;
   onRemove: (id: string) => void;
 }) => {
+  const { t } = useLanguage();
   const [panelOpen, setPanelOpen] = useState(false);
   // Set while the menu is closing because "Add or remove city…" was picked,
   // so the close-autofocus can be redirected from the trigger to the panel.
@@ -69,14 +65,15 @@ export const CitySwitcher = ({
     if (id === GEO_CITY_ID) {
       announce(
         geoStatus === "ready"
-          ? `Showing weather for ${geoLabel}`
+          ? t("citySwitcher.showingWeatherFor", { city: geoLabel })
           : geoStatus === "locating"
-            ? "Locating you…"
-            : "Your location is unavailable. Retrying — allow location access in your browser.",
+            ? t("citySwitcher.locatingYou")
+            : t("citySwitcher.locationUnavailableRetry"),
       );
     } else {
       const city = cities.find((c) => c.id === id);
-      if (city) announce(`Showing weather for ${cityLabel(city)}`);
+      if (city)
+        announce(t("citySwitcher.showingWeatherFor", { city: cityLabel(city) }));
     }
   };
 
@@ -85,7 +82,7 @@ export const CitySwitcher = ({
     // button, else the previous one's, else the panel heading.
     const neighbor = cities[index + 1] ?? cities[index - 1];
     onRemove(city.id);
-    announce(`${cityLabel(city)} removed`);
+    announce(t("citySwitcher.removed", { city: cityLabel(city) }));
     requestAnimationFrame(() => {
       if (neighbor) removeRefs.current.get(neighbor.id)?.focus();
       else headingRef.current?.focus();
@@ -98,10 +95,10 @@ export const CitySwitcher = ({
         <DropdownMenuTrigger asChild>
           <Button ref={triggerRef} variant="outline">
             <MapPinIcon aria-hidden="true" focusable="false" />
-            <span className="sr-only">Change city, currently: </span>
-            <span className="max-w-24 truncate min-[480px]:max-w-40 sm:max-w-64">
+            <span className="sr-only">{t("citySwitcher.changeCity")}</span>
+            <bdi className="max-w-24 truncate min-[480px]:max-w-40 sm:max-w-64">
               {currentLabel}
-            </span>
+            </bdi>
             <ChevronDownIcon aria-hidden="true" focusable="false" />
           </Button>
         </DropdownMenuTrigger>
@@ -116,22 +113,27 @@ export const CitySwitcher = ({
             }
           }}
         >
-          <DropdownMenuLabel>Cities</DropdownMenuLabel>
+          <DropdownMenuLabel>{t("citySwitcher.cities")}</DropdownMenuLabel>
           <DropdownMenuRadioGroup
             value={selectedId}
             onValueChange={handleSelect}
           >
             <DropdownMenuRadioItem value={GEO_CITY_ID}>
-              {geoLabel}
+              <bdi>{geoLabel}</bdi>
               {geoStatus !== "ready" && (
                 <span className="text-muted-foreground">
-                  {GEO_STATUS_SUFFIX[geoStatus]}
+                  {" "}
+                  {t(
+                    geoStatus === "locating"
+                      ? "citySwitcher.locating"
+                      : "citySwitcher.unavailable",
+                  )}
                 </span>
               )}
             </DropdownMenuRadioItem>
             {cities.map((city) => (
               <DropdownMenuRadioItem key={city.id} value={city.id}>
-                {cityLabel(city)}
+                <bdi>{cityLabel(city)}</bdi>
               </DropdownMenuRadioItem>
             ))}
           </DropdownMenuRadioGroup>
@@ -143,7 +145,7 @@ export const CitySwitcher = ({
             }}
           >
             <SettingsIcon aria-hidden="true" focusable="false" />
-            Add or remove city…
+            {t("citySwitcher.manage")}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -153,7 +155,7 @@ export const CitySwitcher = ({
           onKeyDown={(e) => {
             if (e.key === "Escape") closePanel();
           }}
-          className="fixed inset-x-2 top-16 z-401 max-h-[min(70vh,28rem)] overflow-y-auto rounded-lg border bg-background p-4 shadow-lg sm:absolute sm:inset-x-auto sm:right-0 sm:top-full sm:mt-2 sm:w-96 sm:max-w-[calc(100vw-1rem)]"
+          className="fixed inset-x-2 top-16 z-401 max-h-[min(70vh,28rem)] overflow-y-auto rounded-lg border bg-background p-4 shadow-lg sm:absolute sm:inset-x-auto sm:inset-e-0 sm:top-full sm:mt-2 sm:w-96 sm:max-w-[calc(100vw-1rem)]"
         >
           <div className="flex items-center justify-between gap-2">
             <h2
@@ -162,12 +164,12 @@ export const CitySwitcher = ({
               tabIndex={-1}
               className="text-lg font-semibold outline-none"
             >
-              Manage cities
+              {t("citySwitcher.manageHeading")}
             </h2>
             <Button
               variant="ghost"
               size="icon"
-              aria-label="Close manage cities panel"
+              aria-label={t("citySwitcher.closePanel")}
               onClick={closePanel}
             >
               <XIcon aria-hidden="true" focusable="false" />
@@ -186,7 +188,7 @@ export const CitySwitcher = ({
                 id={savedHeadingId}
                 className="text-sm font-medium text-muted-foreground"
               >
-                Saved cities
+                {t("citySwitcher.saved")}
               </h3>
               <ul aria-labelledby={savedHeadingId} className="mt-1 space-y-1">
                 {cities.map((city, index) => (
@@ -194,7 +196,7 @@ export const CitySwitcher = ({
                     key={city.id}
                     className="flex items-center justify-between gap-2 text-sm"
                   >
-                    <span className="truncate">{cityLabel(city)}</span>
+                    <bdi className="truncate">{cityLabel(city)}</bdi>
                     <Button
                       ref={(el) => {
                         if (el) removeRefs.current.set(city.id, el);
@@ -202,7 +204,9 @@ export const CitySwitcher = ({
                       }}
                       variant="ghost"
                       size="icon"
-                      aria-label={`Remove ${cityLabel(city)}`}
+                      aria-label={t("citySwitcher.remove", {
+                        city: cityLabel(city),
+                      })}
                       onClick={() => handleRemove(city, index)}
                     >
                       <Trash2Icon aria-hidden="true" focusable="false" />

@@ -1,5 +1,7 @@
 import { CitySearch } from "@/components/city-search";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/hooks/use-language";
+import type { MessageKey } from "@/i18n";
 import { announce } from "@/lib/announcer";
 import { CheckCircle, Loader2, XCircle } from "lucide-react";
 import { useEffect, useRef } from "react";
@@ -10,6 +12,13 @@ export type StepInfo = {
   // Number of failed attempts in the current automatic-retry cycle.
   attempt?: number;
   onRetry?: () => void;
+};
+
+const STATUS_KEYS: Record<StepInfo["status"], MessageKey> = {
+  waiting: "loading.statusWaiting",
+  loading: "loading.statusLoading",
+  complete: "loading.statusComplete",
+  failed: "loading.statusFailed",
 };
 
 const StepIcon = ({ status }: { status: StepInfo["status"] }) => {
@@ -44,6 +53,7 @@ const StepIcon = ({ status }: { status: StepInfo["status"] }) => {
 };
 
 const Step = ({ label, info }: { label: string; info: StepInfo }) => {
+  const { t, locale } = useLanguage();
   // Announce transitions once, not states: a live region repeating "loading"
   // every render would drown the screen reader.
   const prevStatus = useRef(info.status);
@@ -51,18 +61,23 @@ const Step = ({ label, info }: { label: string; info: StepInfo }) => {
   useEffect(() => {
     if (prevStatus.current !== info.status) {
       prevStatus.current = info.status;
-      if (info.status === "complete") announce(`${label} complete`);
+      if (info.status === "complete")
+        announce(t("loading.stepComplete", { label }));
       if (info.status === "failed")
-        announce(`${label} failed${info.error ? `: ${info.error}` : ""}`);
+        announce(
+          info.error
+            ? t("loading.stepFailedWithError", { label, error: info.error })
+            : t("loading.stepFailed", { label }),
+        );
     }
     const attempt = info.attempt ?? 0;
     if (attempt !== prevAttempt.current) {
       prevAttempt.current = attempt;
       if (attempt > 0 && info.status === "loading") {
-        announce(`${label} request failed, retrying — attempt ${attempt + 1}`);
+        announce(t("loading.retryAnnounce", { label, attempt: attempt + 1 }));
       }
     }
-  }, [info.status, info.error, info.attempt, label]);
+  }, [info.status, info.error, info.attempt, label, t]);
 
   const attempt = info.attempt ?? 0;
 
@@ -73,20 +88,20 @@ const Step = ({ label, info }: { label: string; info: StepInfo }) => {
         <span>
           {label}
           <span className="sr-only">
-            : {info.status}
+            : {t(STATUS_KEYS[info.status])}
             {info.status === "loading" && attempt > 0
-              ? `, retry attempt ${attempt + 1}`
+              ? t("loading.srRetry", { attempt: attempt + 1 })
               : ""}
           </span>
         </span>
         {info.status === "loading" && attempt > 0 && (
           <span aria-hidden="true" className="text-sm text-muted-foreground">
-            retrying (attempt {attempt + 1})
+            {t("loading.retrying", { attempt: attempt + 1 })}
           </span>
         )}
       </div>
       {info.status === "failed" && (
-        <div className="ml-7 flex flex-col items-start gap-2">
+        <div className="ms-7 flex flex-col items-start gap-2">
           {info.error && (
             <span className="text-sm text-red-600 dark:text-red-400">
               {info.error}
@@ -94,7 +109,9 @@ const Step = ({ label, info }: { label: string; info: StepInfo }) => {
           )}
           {info.onRetry && (
             <Button variant="outline" size="sm" onClick={info.onRetry}>
-              Retry {label.toLowerCase()}
+              {t("loading.retry", {
+                label: label.toLocaleLowerCase(locale),
+              })}
             </Button>
           )}
         </div>
@@ -114,19 +131,27 @@ export const LoadingScreen = ({
   geoDenied: boolean;
   onAddCity: (city: City) => void;
 }) => {
+  const { t } = useLanguage();
   const headingRef = useRef<HTMLHeadingElement>(null);
   const fallbackHeadingRef = useRef<HTMLHeadingElement>(null);
   const showCityFallback = geolocation.status === "failed";
+
+  // The static index.html title is English; localize it while loading (App
+  // takes over once weather data arrives). Matters in the geo-denied flow,
+  // where this screen can stay up indefinitely.
+  useEffect(() => {
+    document.title = t("loading.title");
+  }, [t]);
 
   useEffect(() => {
     if (!showCityFallback) return;
     announce(
       geoDenied
-        ? "Location permission denied. You can add a city manually instead."
-        : "Your location is unavailable. You can add a city manually instead.",
+        ? t("loading.geoDeniedAnnounce")
+        : t("loading.geoUnavailableAnnounce"),
     );
     fallbackHeadingRef.current?.focus();
-  }, [showCityFallback, geoDenied]);
+  }, [showCityFallback, geoDenied, t]);
 
   // When a failed block (Retry button, geo-denied search form) unmounts
   // because its step recovered, focus inside it is dropped on <body> —
@@ -156,11 +181,11 @@ export const LoadingScreen = ({
           tabIndex={-1}
           className="text-lg font-semibold outline-none"
         >
-          Loading weather data
+          {t("loading.title")}
         </h1>
-        <ol aria-label="Loading steps" className="space-y-3">
-          <Step label="Geolocation" info={geolocation} />
-          <Step label="Weather" info={weather} />
+        <ol aria-label={t("loading.steps")} className="space-y-3">
+          <Step label={t("loading.stepGeolocation")} info={geolocation} />
+          <Step label={t("loading.stepWeather")} info={weather} />
         </ol>
         {showCityFallback && (
           <section aria-labelledby="loading-add-city-heading" className="pt-2">
@@ -170,12 +195,12 @@ export const LoadingScreen = ({
               tabIndex={-1}
               className="text-base font-medium outline-none"
             >
-              Add a city instead
+              {t("loading.addCityInstead")}
             </h2>
             <p className="mt-1 text-sm text-muted-foreground">
               {geoDenied
-                ? "Location permission was denied, so your local weather can't be shown. Search for a city to see its weather."
-                : "Your location couldn't be determined. Search for a city to see its weather."}
+                ? t("loading.geoDeniedHint")
+                : t("loading.geoUnavailableHint")}
             </p>
             <div className="mt-3">
               <CitySearch onAdd={onAddCity} />

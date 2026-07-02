@@ -44,10 +44,12 @@ export const useAirQualityForLocations = (locations: WeatherLocation[]) =>
     refetchInterval: 30 * 60 * 1000,
   });
 
-export const useAddress = (coords: GeolocationObject | undefined) =>
+export const useAddress = (coords: GeolocationObject | undefined, lang: Lang) =>
   useQuery({
-    queryKey: ["address", coords],
-    queryFn: () => fetchAddress(coords!),
+    // lang is part of the key so a persisted response in one language isn't
+    // served to a session running in another.
+    queryKey: ["address", coords, lang],
+    queryFn: () => fetchAddress(coords!, lang),
     enabled: !!coords,
     staleTime: Infinity,
   });

@@ -29,3 +29,13 @@ export const announce = (message: string) => {
   queue.push(message);
   if (flushTimer === null) flush();
 };
+
+// Drops everything not yet spoken. Used on language switch so messages queued
+// in the previous language aren't read with the new language's voice.
+export const clearAnnouncements = () => {
+  queue.length = 0;
+  if (flushTimer !== null) {
+    clearTimeout(flushTimer);
+    flushTimer = null;
+  }
+};

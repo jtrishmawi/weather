@@ -1,8 +1,25 @@
+import type { MessageKey } from "@/i18n";
+
+// Untranslated messages for Error.message (logs, debugging); the UI renders
+// getGeoErrorMessageKey(error) through t() instead, so the text follows the
+// app language even when the error object is cached.
 const GEO_ERROR_MESSAGES: Record<number, string> = {
   1: "Location permission denied",
   2: "Your position could not be determined",
   3: "Locating you took too long",
 };
+
+const GEO_ERROR_KEYS: Record<number, MessageKey> = {
+  0: "geoError.unsupported",
+  1: "geoError.denied",
+  2: "geoError.unavailable",
+  3: "geoError.timeout",
+};
+
+export const getGeoErrorMessageKey = (error: unknown): MessageKey =>
+  error instanceof GeolocationError
+    ? (GEO_ERROR_KEYS[error.code] ?? "geoError.unavailable")
+    : "geoError.unavailable";
 
 class GeolocationError extends Error {
   // Mirrors GeolocationPositionError.code: 1 = denied, 2 = unavailable,

@@ -7,11 +7,23 @@ type GeocodingSearchResult = {
   admin1?: string;
 };
 
-export const searchCities = async (query: string): Promise<City[]> => {
+// Open-Meteo geocoding localizes name/admin1/country. It has no Arabic, so
+// the Arabic UI falls back to English names (proper nouns, acceptable).
+const GEOCODING_LANGUAGES: Record<Lang, string> = {
+  en: "en",
+  fr: "fr",
+  ar: "en",
+};
+
+export const searchCities = async (
+  query: string,
+  lang: Lang,
+): Promise<City[]> => {
   const url = new URL("https://geocoding-api.open-meteo.com/v1/search");
   url.searchParams.set("name", query);
   url.searchParams.set("count", "8");
   url.searchParams.set("format", "json");
+  url.searchParams.set("language", GEOCODING_LANGUAGES[lang]);
 
   const response = await fetch(url);
   if (!response.ok) throw new Error("City search failed");

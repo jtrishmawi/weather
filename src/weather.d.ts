@@ -1,5 +1,7 @@
 type Theme = "dark" | "light" | "system";
 
+type Lang = "en" | "fr" | "ar";
+
 type GeolocationObject = {
   latitude: number;
   longitude: number;

@@ -9,8 +9,8 @@ export const RainChart = ({
     kind="bar"
     data={rainCharts}
     dataKey="rain"
-    unit="mm"
+    unitKey="unit.mm"
     color="var(--chart-2)"
-    label="Rain"
+    label="chart.rain"
   />
 );

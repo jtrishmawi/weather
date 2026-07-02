@@ -9,8 +9,8 @@ export const TempChart = ({
     kind="line"
     data={tempCharts}
     dataKey="temperature"
-    unit="°C"
+    unitKey="unit.celsius"
     color="var(--chart-1)"
-    label="Temperature"
+    label="chart.temperature"
   />
 );

@@ -1,4 +1,6 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useLanguage } from "@/hooks/use-language";
+import { formatDate } from "@/lib/dates";
 import { getCardinalDirection } from "@/lib/utils";
 import { getWMOCode, getWMOImageUrl } from "@/lib/wmo-codes";
 import { Sunrise, Sunset, Wind } from "lucide-react";
@@ -19,13 +21,15 @@ type ForecastProps = {
   windDirection10mDominant: Float32Array;
 };
 
-const formatDaylight = (seconds: number) => {
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.round((seconds % 3600) / 60);
-  return `${hours}h ${minutes}m`;
-};
-
 export const Forecast = (data: ForecastProps) => {
+  const { t, locale } = useLanguage();
+
+  const formatDaylight = (seconds: number) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.round((seconds % 3600) / 60);
+    return t("format.daylight", { hours, minutes });
+  };
+
   const casts = data.time.map((time, index) => {
     return {
       temperature2mMax: data.temperature2mMax[index],
@@ -44,30 +48,29 @@ export const Forecast = (data: ForecastProps) => {
     };
   });
 
-  const { format: dateFormat } = new Intl.DateTimeFormat(undefined, {
-    month: "short",
-    weekday: "short",
-    day: "2-digit",
-  });
+  const dateFormat = (date: Date) =>
+    formatDate(date, locale, {
+      month: "short",
+      weekday: "short",
+      day: "2-digit",
+    });
 
-  const { format: numberFormat } = new Intl.NumberFormat(undefined, {
+  const timeFormat = (date: Date) =>
+    formatDate(date, locale, { hour: "2-digit", minute: "2-digit" });
+
+  const { format: numberFormat } = new Intl.NumberFormat(locale, {
     maximumFractionDigits: 0,
   });
 
-  const { format: decimalFormat } = new Intl.NumberFormat(undefined, {
+  const { format: decimalFormat } = new Intl.NumberFormat(locale, {
     maximumFractionDigits: 2,
-  });
-
-  const { format: timeFormat } = new Intl.DateTimeFormat(undefined, {
-    hour: "2-digit",
-    minute: "2-digit",
   });
 
   return (
     <div className="@container/current bg-card text-card-foreground border border-border rounded-xl flex flex-col h-full lg:px-6 p-4">
       <div className="flex items-center">
         <h2 className="scroll-m-20 pb-2 text-2xl sm:text-3xl font-semibold tracking-tight first:mt-0">
-          Forecast
+          {t("forecast.title")}
         </h2>
       </div>
       <ScrollArea className="flex-1 min-h-0 max-h-96">
@@ -81,7 +84,7 @@ export const Forecast = (data: ForecastProps) => {
                 <div className="flex items-center gap-2 min-w-0">
                   <img
                     src={getWMOImageUrl(cast.weatherCode.toString())}
-                    alt={getWMOCode(cast.weatherCode.toString())}
+                    alt={t(getWMOCode(cast.weatherCode.toString()))}
                     className="invert dark:invert-0 size-10 shrink-0 object-none"
                   />
                   <div className="min-w-0">
@@ -89,16 +92,18 @@ export const Forecast = (data: ForecastProps) => {
                       {dateFormat(cast.time)}
                     </div>
                     <div className="text-muted-foreground capitalize truncate">
-                      {getWMOCode(cast.weatherCode.toString())}
+                      {t(getWMOCode(cast.weatherCode.toString()))}
                     </div>
                   </div>
                 </div>
-                <div className="text-right font-mono shrink-0">
+                <div className="text-end font-mono shrink-0">
                   <span className="text-lg font-semibold">
-                    {numberFormat(cast.temperature2mMax)}&deg;C
+                    {numberFormat(cast.temperature2mMax)}
+                    {t("unit.celsius")}
                   </span>
                   <span className="text-muted-foreground">
-                    &nbsp;/&nbsp;{numberFormat(cast.temperature2mMin)}&deg;C
+                    &nbsp;/&nbsp;{numberFormat(cast.temperature2mMin)}
+                    {t("unit.celsius")}
                   </span>
                 </div>
               </div>
@@ -111,23 +116,46 @@ export const Forecast = (data: ForecastProps) => {
                   <Sunset aria-hidden="true" className="size-3.5" />
                   {timeFormat(cast.sunset)}
                 </span>
-                <span>{formatDaylight(cast.daylightDuration)} daylight</span>
-                <span>{decimalFormat(cast.precipitationSum)}mm rain</span>
+                <span>
+                  {t("forecast.daylight", {
+                    duration: formatDaylight(cast.daylightDuration),
+                  })}
+                </span>
+                <span>
+                  {t("forecast.rainAmount", {
+                    value: `${decimalFormat(cast.precipitationSum)}${t("unit.mm")}`,
+                  })}
+                </span>
                 {/* Open-Meteo has no precipitation probability beyond ~15
                     days; the SDK reads the nulls back as NaN. */}
                 {!Number.isNaN(cast.precipitationProbabilityMax) && (
                   <span>
-                    {numberFormat(cast.precipitationProbabilityMax)}% chance
-                    <span className="sr-only"> of precipitation</span>
+                    <span aria-hidden="true">
+                      {t("forecast.chanceVisible", {
+                        value: `${numberFormat(cast.precipitationProbabilityMax)}${t("unit.percent")}`,
+                      })}
+                    </span>
+                    <span className="sr-only">
+                      {t("forecast.chanceSr", {
+                        value: `${numberFormat(cast.precipitationProbabilityMax)}${t("unit.percent")}`,
+                      })}
+                    </span>
                   </span>
                 )}
-                <span>UV {numberFormat(cast.uvIndexMax)}</span>
+                <span>
+                  {t("forecast.uv", { value: numberFormat(cast.uvIndexMax) })}
+                </span>
                 <span className="flex items-center gap-1">
                   <Wind aria-hidden="true" className="size-3.5" />
-                  {numberFormat(cast.windSpeed10mMax)}km/h&nbsp;
-                  {getCardinalDirection(cast.windDirection10mDominant)}
+                  {numberFormat(cast.windSpeed10mMax)}
+                  {t("unit.kmh")}&nbsp;
+                  {t(getCardinalDirection(cast.windDirection10mDominant))}
                 </span>
-                <span>Gusts {numberFormat(cast.windGusts10mMax)}km/h</span>
+                <span>
+                  {t("forecast.gusts", {
+                    value: `${numberFormat(cast.windGusts10mMax)}${t("unit.kmh")}`,
+                  })}
+                </span>
               </div>
             </div>
           );

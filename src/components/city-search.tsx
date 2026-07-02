@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { cityLabel } from "@/hooks/use-cities";
+import { useLanguage } from "@/hooks/use-language";
 import { announce } from "@/lib/announcer";
 import { searchCities } from "@/services/city-search";
 import { useMutation } from "@tanstack/react-query";
@@ -19,45 +20,49 @@ export const CitySearch = ({
   addedIds?: string[];
   inputRef?: React.Ref<HTMLInputElement>;
 }) => {
+  const { t, tp, lang } = useLanguage();
   const [query, setQuery] = useState("");
   const inputId = useId();
   const errorId = useId();
 
   const search = useMutation({
-    mutationFn: searchCities,
+    mutationFn: (name: string) => searchCities(name, lang),
     onSuccess: (results, searched) => {
       announce(
         results.length === 0
-          ? `No cities found for ${searched}`
-          : `${results.length} result${results.length > 1 ? "s" : ""} for ${searched}`,
+          ? t("citySearch.noResults", { query: searched })
+          : tp("citySearch.results", results.length, { query: searched }),
       );
     },
-    onError: () => announce("City search failed"),
+    onError: () => announce(t("citySearch.failed")),
   });
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     const trimmed = query.trim();
     if (!trimmed || search.isPending) return;
-    announce("Searching…");
+    announce(t("citySearch.searching"));
     search.mutate(trimmed);
   };
 
   const handleAdd = (city: City) => {
     onAdd(city);
-    announce(`${cityLabel(city)} added to saved cities`);
+    announce(t("citySearch.addedAnnounce", { city: cityLabel(city) }));
   };
 
   return (
     <div className="space-y-3">
       <form role="search" onSubmit={handleSubmit} className="flex gap-2">
         <label htmlFor={inputId} className="sr-only">
-          City name
+          {t("citySearch.label")}
         </label>
         <input
           id={inputId}
           ref={inputRef}
           type="text"
+          // dir=auto: typed city names keep their own script's direction
+          // (e.g. a Latin name typed in the Arabic UI).
+          dir="auto"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           autoComplete="off"
@@ -78,35 +83,35 @@ export const CitySearch = ({
           ) : (
             <SearchIcon aria-hidden="true" focusable="false" />
           )}
-          Search
+          {t("citySearch.search")}
         </Button>
       </form>
       {search.isError && (
         <p id={errorId} className="text-sm text-red-600 dark:text-red-400">
-          City search failed. Check your connection and try again.
+          {t("citySearch.failedHint")}
         </p>
       )}
       {search.isSuccess && search.data.length === 0 && (
         <p className="text-sm text-muted-foreground">
-          No cities found for “{search.variables}”.
+          {t("citySearch.noResults", { query: search.variables })}
         </p>
       )}
       {search.isSuccess && search.data.length > 0 && (
-        <ul aria-label="Search results" className="space-y-1">
+        <ul aria-label={t("citySearch.resultsLabel")} className="space-y-1">
           {search.data.map((city) =>
             addedIds.includes(city.id) ? (
               <li
                 key={city.id}
                 className="flex h-9 items-center justify-between gap-2 px-4 text-sm text-muted-foreground"
               >
-                <span className="truncate">{cityLabel(city)}</span>
+                <bdi className="truncate">{cityLabel(city)}</bdi>
                 <span className="flex items-center gap-1 shrink-0">
                   <CheckIcon
                     aria-hidden="true"
                     focusable="false"
                     className="size-4"
                   />
-                  Added
+                  {t("citySearch.added")}
                 </span>
               </li>
             ) : (
@@ -116,8 +121,8 @@ export const CitySearch = ({
                   className="w-full justify-start font-normal"
                   onClick={() => handleAdd(city)}
                 >
-                  <span className="sr-only">Add </span>
-                  {cityLabel(city)}
+                  <span className="sr-only">{t("citySearch.addPrefix")}</span>
+                  <bdi>{cityLabel(city)}</bdi>
                 </Button>
               </li>
             ),

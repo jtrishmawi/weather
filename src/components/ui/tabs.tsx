@@ -1,15 +1,20 @@
-import * as React from "react";
 import * as TabsPrimitive from "@radix-ui/react-tabs";
+import * as React from "react";
 
+import { useLanguage } from "@/hooks/use-language";
 import { cn } from "@/lib/utils";
 
 function Tabs({
   className,
   ...props
 }: React.ComponentProps<typeof TabsPrimitive.Root>) {
+  // Radix doesn't read <html dir>; without this, arrow-key navigation
+  // between tabs stays LTR in the Arabic UI.
+  const { dir } = useLanguage();
   return (
     <TabsPrimitive.Root
       data-slot="tabs"
+      dir={dir}
       className={cn("flex flex-col gap-2", className)}
       {...props}
     />
@@ -24,7 +29,7 @@ function TabsList({
     <TabsPrimitive.List
       data-slot="tabs-list"
       className={cn(
-        "bg-muted text-muted-foreground inline-flex h-9 w-fit items-center justify-center rounded-lg p-[3px]",
+        "bg-muted text-muted-foreground inline-flex h-9 w-fit items-center justify-center rounded-lg p-0.75",
         className,
       )}
       {...props}
@@ -61,4 +66,5 @@ function TabsContent({
   );
 }
 
-export { Tabs, TabsList, TabsTrigger, TabsContent };
+export { Tabs, TabsContent, TabsList, TabsTrigger };
+

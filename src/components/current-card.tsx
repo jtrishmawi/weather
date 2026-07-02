@@ -1,6 +1,9 @@
 import { Compass } from "@/components/compass";
+import { useLanguage } from "@/hooks/use-language";
+import { splitAround } from "@/i18n";
 import { getAqiSeverity } from "@/lib/aqi";
-import { getCardinalDirection, getUvSeverityLabel, timeAgo } from "@/lib/utils";
+import { timeAgo } from "@/lib/dates";
+import { getCardinalDirection, getUvSeverityLabel } from "@/lib/utils";
 import { getWMOCode, getWMOImageUrl } from "@/lib/wmo-codes";
 import { DropletsIcon, Leaf } from "lucide-react";
 
@@ -39,30 +42,42 @@ export const CurrentCard = ({
     };
   };
 }) => {
-  const { format } = new Intl.NumberFormat(undefined, {
+  const { t, locale } = useLanguage();
+  const { format } = new Intl.NumberFormat(locale, {
     maximumFractionDigits: 2,
+  });
+  const { format: formatFixed1 } = new Intl.NumberFormat(locale, {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
   });
 
   const aqiSeverity = airQuality
     ? getAqiSeverity(airQuality.current.usAqi)
     : null;
 
+  const condition = t(
+    getWMOCode(
+      weather.current.weatherCode.toString(),
+      weather.current.isDay ? "day" : "night",
+    ),
+  );
+  // The condition gets its own styled span inside the translated sentence.
+  const [conditionBefore, conditionAfter] = splitAround(
+    t("current.condition"),
+    "condition",
+  );
+
   return (
     <div className="@container/current bg-card text-card-foreground border border-border rounded-xl h-full">
       <div className="h-full flex flex-col justify-between gap-4 lg:px-6 p-4">
         <p className="italic">
-          The current weather condition is&nbsp;
-          <span className="font-semibold lowercase">
-            {getWMOCode(
-              weather.current.weatherCode.toString(),
-              weather.current.isDay ? "day" : "night",
-            )}
-            .
-          </span>
+          {conditionBefore}
+          <span className="font-semibold lowercase">{condition}</span>
+          {conditionAfter}
           <small className="text-xs font-medium leading-none block sm:hidden pt-1">
-            <span className="sr-only">Updated:</span>
+            <span className="sr-only">{t("current.updatedSr")}</span>
             <time dateTime={weather.current?.time.toString()}>
-              {timeAgo(weather.current?.time)}
+              {timeAgo(weather.current?.time, locale)}
             </time>
           </small>
         </p>
@@ -73,15 +88,12 @@ export const CurrentCard = ({
                 weather.current.weatherCode.toString(),
                 weather.current.isDay ? "day" : "night",
               )}
-              alt={getWMOCode(
-                weather.current.weatherCode.toString(),
-                weather.current.isDay ? "day" : "night",
-              )}
+              alt={condition}
               className="aspect-square h-20 object-none invert dark:invert-0"
             />
             <div className="text-5xl font-bold font-mono">
               {Math.round(weather.current.temperature2m)}
-              <span className="text-3xl">&deg;C</span>
+              <span className="text-3xl">{t("unit.celsius")}</span>
             </div>
           </div>
           <div className="flex basis-full items-center justify-around grow max-w-64 @md/current:basis-auto">
@@ -92,9 +104,9 @@ export const CurrentCard = ({
               />
             </div>
             <div className="text-5xl font-bold font-mono">
-              <span className="sr-only">Wind speed </span>
+              <span className="sr-only">{t("current.windSpeedSr")}</span>
               {Math.round(weather.current.windSpeed10m)}
-              <span className="text-3xl">km/h</span>
+              <span className="text-3xl">{t("unit.kmh")}</span>
             </div>
           </div>
           <div className="flex basis-full items-center justify-around grow max-w-64 @md/current:basis-auto">
@@ -105,9 +117,9 @@ export const CurrentCard = ({
               />
             </div>
             <div className="text-5xl font-bold font-mono">
-              <span className="sr-only">Humidity </span>
+              <span className="sr-only">{t("current.humiditySr")}</span>
               {Math.round(weather.current.relativeHumidity2m)}
-              <span className="text-3xl">%</span>
+              <span className="text-3xl">{t("unit.percent")}</span>
             </div>
           </div>
           {airQuality && aqiSeverity && (
@@ -118,17 +130,17 @@ export const CurrentCard = ({
                   aria-hidden="true"
                 />
               </div>
-              <div className="text-right">
+              <div className="text-end">
                 <div
                   className={`text-5xl font-bold font-mono ${aqiSeverity.colorClass}`}
                 >
-                  <span className="sr-only">Air quality index </span>
+                  <span className="sr-only">{t("current.aqiSr")}</span>
                   {Math.round(airQuality.current.usAqi)}
                 </div>
                 <div
                   className={`text-sm font-medium ${aqiSeverity.colorClass}`}
                 >
-                  {aqiSeverity.label}
+                  {t(aqiSeverity.labelKey)}
                 </div>
               </div>
             </div>
@@ -136,93 +148,109 @@ export const CurrentCard = ({
         </div>
         <dl className="grid grid-cols-2 gap-4 @md/current:grid-cols-4 @2xl/current:grid-cols-6 justify-evenly items-center">
           {/* Priority data: weather, humidity, wind, UV, air quality */}
-          <dt className="@md/current:text-right">Temperature</dt>
-          <dd className="font-medium font-mono text-right @md/current:text-left">
-            {format(weather.current.temperature2m)}&deg;C
+          <dt className="@md/current:text-end">{t("current.temperature")}</dt>
+          <dd className="font-medium font-mono text-end @md/current:text-start">
+            {format(weather.current.temperature2m)}
+            {t("unit.celsius")}
           </dd>
-          <dt className="@md/current:text-right">Feels like</dt>
-          <dd className="font-medium font-mono text-right @md/current:text-left">
+          <dt className="@md/current:text-end">{t("current.feelsLike")}</dt>
+          <dd className="font-medium font-mono text-end @md/current:text-start">
             {format(weather.current.apparentTemperature)}
-            &deg;C
+            {t("unit.celsius")}
           </dd>
-          <dt className="@md/current:text-right">Humidity</dt>
-          <dd className="font-medium font-mono text-right @md/current:text-left">
-            {format(weather.current.relativeHumidity2m)}%
+          <dt className="@md/current:text-end">{t("current.humidity")}</dt>
+          <dd className="font-medium font-mono text-end @md/current:text-start">
+            {format(weather.current.relativeHumidity2m)}
+            {t("unit.percent")}
           </dd>
-          <dt className="@md/current:text-right">Wind</dt>
-          <dd className="font-medium font-mono text-right @md/current:text-left">
-            {format(weather.current.windSpeed10m)}km/h
+          <dt className="@md/current:text-end">{t("current.wind")}</dt>
+          <dd className="font-medium font-mono text-end @md/current:text-start">
+            {format(weather.current.windSpeed10m)}
+            {t("unit.kmh")}
           </dd>
-          <dt className="@md/current:text-right">Wind gusts</dt>
-          <dd className="font-medium font-mono text-right @md/current:text-left">
-            {format(weather.current.windGusts10m)}km/h
+          <dt className="@md/current:text-end">{t("current.windGusts")}</dt>
+          <dd className="font-medium font-mono text-end @md/current:text-start">
+            {format(weather.current.windGusts10m)}
+            {t("unit.kmh")}
           </dd>
-          <dt className="@md/current:text-right">Wind direction</dt>
-          <dd className="font-medium font-mono text-right @md/current:text-left">
-            {getCardinalDirection(weather.current.windDirection10m)}
+          <dt className="@md/current:text-end">
+            {t("current.windDirection")}
+          </dt>
+          <dd className="font-medium font-mono text-end @md/current:text-start">
+            {t(getCardinalDirection(weather.current.windDirection10m))}
           </dd>
-          <dt className="@md/current:text-right">UV index</dt>
-          <dd className="font-medium font-mono text-right @md/current:text-left">
+          <dt className="@md/current:text-end">{t("current.uvIndex")}</dt>
+          <dd className="font-medium font-mono text-end @md/current:text-start">
             {format(weather.current.uvIndex)}
-            <span className="ml-1 text-xs font-normal">
-              ({getUvSeverityLabel(weather.current.uvIndex)})
+            <span className="ms-1 text-xs font-normal">
+              ({t(getUvSeverityLabel(weather.current.uvIndex))})
             </span>
           </dd>
           {airQuality && (
             <>
-              <dt className="@md/current:text-right">PM2.5</dt>
-              <dd className="font-medium font-mono text-right @md/current:text-left">
-                {airQuality.current.pm2_5.toFixed(1)}&nbsp;µg/m³
+              <dt className="@md/current:text-end">{t("current.pm25")}</dt>
+              <dd className="font-medium font-mono text-end @md/current:text-start">
+                {formatFixed1(airQuality.current.pm2_5)}&nbsp;{t("unit.ugm3")}
               </dd>
-              <dt className="@md/current:text-right">PM10</dt>
-              <dd className="font-medium font-mono text-right @md/current:text-left">
-                {airQuality.current.pm10.toFixed(1)}&nbsp;µg/m³
+              <dt className="@md/current:text-end">{t("current.pm10")}</dt>
+              <dd className="font-medium font-mono text-end @md/current:text-start">
+                {formatFixed1(airQuality.current.pm10)}&nbsp;{t("unit.ugm3")}
               </dd>
-              <dt className="@md/current:text-right">Ozone</dt>
-              <dd className="font-medium font-mono text-right @md/current:text-left">
-                {airQuality.current.ozone.toFixed(1)}&nbsp;µg/m³
+              <dt className="@md/current:text-end">{t("current.ozone")}</dt>
+              <dd className="font-medium font-mono text-end @md/current:text-start">
+                {formatFixed1(airQuality.current.ozone)}&nbsp;{t("unit.ugm3")}
               </dd>
-              <dt className="@md/current:text-right">European AQI</dt>
-              <dd className="font-medium font-mono text-right @md/current:text-left">
+              <dt className="@md/current:text-end">
+                {t("current.europeanAqi")}
+              </dt>
+              <dd className="font-medium font-mono text-end @md/current:text-start">
                 {Math.round(airQuality.current.europeanAqi)}
               </dd>
             </>
           )}
           {/* Secondary data */}
-          <dt className="@md/current:text-right">Cloud coverage</dt>
-          <dd className="font-medium font-mono text-right @md/current:text-left">
-            {format(weather.current.cloudCover)}%
+          <dt className="@md/current:text-end">{t("current.cloudCover")}</dt>
+          <dd className="font-medium font-mono text-end @md/current:text-start">
+            {format(weather.current.cloudCover)}
+            {t("unit.percent")}
           </dd>
-          <dt className="@md/current:text-right">Rain</dt>
-          <dd className="font-medium font-mono text-right @md/current:text-left">
-            {format(weather.current.rain)}mm
+          <dt className="@md/current:text-end">{t("current.rain")}</dt>
+          <dd className="font-medium font-mono text-end @md/current:text-start">
+            {format(weather.current.rain)}
+            {t("unit.mm")}
           </dd>
-          <dt className="@md/current:text-right">Precipitation</dt>
-          <dd className="font-medium font-mono text-right @md/current:text-left">
-            {format(weather.current.precipitation)}mm
+          <dt className="@md/current:text-end">
+            {t("current.precipitation")}
+          </dt>
+          <dd className="font-medium font-mono text-end @md/current:text-start">
+            {format(weather.current.precipitation)}
+            {t("unit.mm")}
           </dd>
-          <dt className="@md/current:text-right">Showers</dt>
-          <dd className="font-medium font-mono text-right @md/current:text-left">
-            {format(weather.current.showers)}mm
+          <dt className="@md/current:text-end">{t("current.showers")}</dt>
+          <dd className="font-medium font-mono text-end @md/current:text-start">
+            {format(weather.current.showers)}
+            {t("unit.mm")}
           </dd>
-          <dt className="@md/current:text-right">Snowfall</dt>
-          <dd className="font-medium font-mono text-right @md/current:text-left">
-            {weather.current.snowfall}cm
+          <dt className="@md/current:text-end">{t("current.snowfall")}</dt>
+          <dd className="font-medium font-mono text-end @md/current:text-start">
+            {weather.current.snowfall}
+            {t("unit.cm")}
           </dd>
-          <dt className="@md/current:text-right">Dew point</dt>
-          <dd className="font-medium font-mono text-right @md/current:text-left">
+          <dt className="@md/current:text-end">{t("current.dewPoint")}</dt>
+          <dd className="font-medium font-mono text-end @md/current:text-start">
             {format(weather.current.dewPoint2m)}
-            &deg;C
+            {t("unit.celsius")}
           </dd>
-          <dt className="@md/current:text-right">Visibility</dt>
-          <dd className="font-medium font-mono text-right @md/current:text-left">
-            {format(weather.current.visibility / 1000)}km
+          <dt className="@md/current:text-end">{t("current.visibility")}</dt>
+          <dd className="font-medium font-mono text-end @md/current:text-start">
+            {format(weather.current.visibility / 1000)}
+            {t("unit.km")}
           </dd>
         </dl>
-        <small className="text-xs font-medium leading-none ml-auto hidden sm:block">
-          <span className="font-light">Last updated:</span>&nbsp;
+        <small className="text-xs font-medium leading-none ms-auto hidden sm:block">
+          <span className="font-light">{t("current.lastUpdated")}</span>&nbsp;
           <time dateTime={weather.current?.time.toString()}>
-            {timeAgo(weather.current?.time)}
+            {timeAgo(weather.current?.time, locale)}
           </time>
         </small>
       </div>

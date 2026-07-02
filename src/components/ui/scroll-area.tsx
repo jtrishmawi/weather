@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area";
 
+import { useLanguage } from "@/hooks/use-language";
 import { cn } from "@/lib/utils";
 
 function ScrollArea({
@@ -8,9 +9,13 @@ function ScrollArea({
   children,
   ...props
 }: React.ComponentProps<typeof ScrollAreaPrimitive.Root>) {
+  // Radix doesn't read <html dir>; this moves the scrollbar to the left
+  // edge in the Arabic UI.
+  const { dir } = useLanguage();
   return (
     <ScrollAreaPrimitive.Root
       data-slot="scroll-area"
+      dir={dir}
       className={cn("relative", className)}
       {...props}
     >
@@ -41,7 +46,7 @@ function ScrollBar({
       className={cn(
         "flex touch-none p-px transition-colors select-none",
         orientation === "vertical" &&
-          "h-full w-2.5 border-l border-l-transparent",
+          "h-full w-2.5 border-s border-s-transparent",
         orientation === "horizontal" &&
           "h-2.5 flex-col border-t border-t-transparent",
         className,
